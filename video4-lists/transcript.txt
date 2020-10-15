@@ -1,0 +1,183 @@
+Welcome back everyone!
+
+In this video I'm going to introduce you to our data structure of the
+week which, this week, is python lists.  Now you use a list in python
+to store a bunch of data. What that data is, well that really depends
+on your program.  It could be a list of numbers, it could be a list of
+names of people you know, it could be a list of objects where each
+object represents some monster in a game. The sky's the limit.
+
+You can use this to store pretty much a list of anything.  This is the
+simplest main data structure in python, and so I'm going to go through
+and show you what they can do, and how you use python lists. So let me
+fire up a terminal window and let's get started.
+
+I'm just going to start by typing some commands into python.  and so
+we can create a list by doing this.  Basically what I've done here is
+to use square brackets. and that creates an empty list. Now empty
+lists are really not very interesting so instead of an empty list I'm
+going to initialize the list with some data, and I can do that again
+using square brackets. This is going to be a list of the the weekdays
+in a week. We're going to add the string "monday", we're going to add
+the string "tuesday", the string "wednesday", "thursday" and "friday".
+Okay it's not a very exciting list but there we go.
+
+Now I've created a list, I can print it out. For example, which just
+shows me exactly what I did before, so what have we got here so far?
+Well, what we know is we use square brackets to denote a list, and we
+use commas to separate the items in the list and the actual things we
+put into the list.  In this case I've put in text strings representing
+days of the week, but they could be other things such as numbers or
+objects or things like that.  You can mix them, so you could have a
+mixture of strings and numbers and things like that if you wish to.
+There's no particular restriction that they all have to be of the same
+type.  That's quite different from, for example, an array in C.
+
+Now what can we actually do when we've created our list?  One thing we
+might be able to do is to say well how long is the list?  So we can
+print out the length of the list, length of days, and indeed it says
+there are five days in our list of weekdays.  The next thing we can do
+is we can actually access the data from the list; we can access the
+data by its position. So if we want to look at say, what's day two,
+day two of the week is equal to days and we can index in by the
+position in the list like that, and so we can print out what day two
+is and we discover that day two is wednesday. No it's not!  So what's
+happened here?  One of the things that's really important to realize
+is that indexing operations in python, as they are in quite a lot of
+other programming languages, the very first item is not item number
+one it's item number zero.  This is there for very good reasons: it
+makes things much simpler in terms of the arithmetic of how you
+actually index things if things start at zero not one, but you've got
+to be just a little bit careful to be aware that you know what's going
+on.
+
+So day two of the week is not days[2], day two of the week is days[1],
+because zero would be the first one.  So we can print that out and now
+it's actually done the right thing.
+
+Okay so that's the first thing we can do, we can actually access the
+data that we've got stored. That's a really useful thing to be able to
+do, and we access it in this way by its position.
+
+What's the next thing we can do? Well if our list is fixed and can't
+be changed, it has limited use. So maybe we can add the weekend? What
+we can do is we can take our days list and we can append to it, add to
+the end.  We can add saturday to the end of our list, and we can add
+sunday to the end of our list, and we can print out days, and now
+we've got seven days in our week rather than the five we had
+originally.  So that's great, we can add to the end of the list.
+
+We can also modify the list. We can remove items from the list as
+well. Now you can do that by removing just from the beginning, or the
+end, or we can actually delete by a position. So suppose we really
+don't like mondays.  Then we can do this; we can do "del day[0]", and
+magically monday has disappeared.
+
+
+Unfortunately we probably don't get to remove monday from our list of
+days in the real world, so maybe we should add it back.  We can
+actually use insert to add things, insert to add things back into the
+list.  Insert takes two parameters: the first one is the position, so
+we're going to put monday at position zero, and then what we add back,
+in this case monday.  You can see monday has come back into our list.
+
+So that's what we can do, we can add things to the list, we can remove
+things from the list, and so forth.  The next thing we can do is we
+can modify the items that are actually in the list.  So, for example,
+if we get really excited that it's the end of the week we can, for
+example, get be all shouty about friday and now FRIDAY has become
+capitalized and shouty!
+
+Those are the sort of operations that we can perform on lists: adding,
+modifying and so forth.  What else can? How about we want to to copy a
+list? We could, for example, do "more_days = days", and now we can
+print out what more_days is, and it's the same content as days.
+
+Now suppose in more_days we we don't want to be so excited about
+fridays. We can then go and we can change that item back:
+"more_days[4] = 'friday'" as it was before.  And we can print out
+more_days, and everything has changed as we expected.
+
+But not quite because, if we look at what's happened to the our
+original list "days", that's changed too.  Now that can be a bit of
+surprise. We thought we'd made a copy of the list when we did this.
+but that's not what happened. What happened instead was it gave create
+another name more_days and associated it with the same list that the
+name days was associated with.  It didn't make a copy, so we now have
+only one list but two names for it, which sometimes is what you want
+and sometimes is not what you want.
+
+If you actually want to make a copy of the list, we can do
+copy_of_days, and we do that we actually have to explicitly say we
+really really really do want python to copy it. And of course copying
+is more expensive because you have to go through and create a copy of
+each of the items. but if we do that then we can print it
+copy_of_days, and that one actually has same data, and we can then for
+example, we can delete the original days we can delete the weekend so
+we can delete, six and we can delete five.  Now what we'll see is that
+we've changed days, but copy_of_days really is a copy: it was not
+changed by by those operations.  Now we have two lists rather than
+one.
+
+So those are the main operations that we actually perform on a list,
+but that's perhaps not quite so useful. What we often want to do is to
+go through and access all of the data in the list.  To do that I'm
+going to actually have to fire up an editor and show you how to
+actually access all the items.
+
+Now let's create our list again: monday (I can't type today), tuesday
+wednesday (really having trouble typing), okay so that's our list back
+where we were.
+
+Now how are we going to go through and, say, print out all of the
+elements of the list? Well there's more than one way to do this.
+We'll try it in two different ways.  The first way we're going to use
+a python for loop and so "for day_num in range(len(days)", we're going
+to ...  I'm going to, for each of those, print out both the day_num
+itself and the contents of that part of the day.
+
+Let's run this and then we'll come back and look at how it actually
+works.  First of all, what we see is it's run through and it's printed
+out on each line the position in the list and the content of that
+position.  So what's going on here: this structure "for" will let us
+go through a a set of data and do the same operation on each of those
+things in a set of data. What's a set of data here? Well what we've
+done is for day_num is in range 0 to len(days), and so what this range
+will do is it will generate each time through the next one in the
+sequence. The first time through this little loop it will generate
+zero, the next time through it will generate one, and then it will
+generate two, and then it will generate three all the way up to
+len(days)-1. So if len days is is five, this will go up to number
+four, and actually that's what we want for accessing the items from
+the list.
+
+Each time through this variable day_num will take on a different
+value: the first time it will take on the value zero, the second time
+it'll take on the value one, and so forth.  This is going to go
+through five times because range from zero to len(days)-1 is five
+elements, and print out the five elements of our list.  Each time
+we're printing out both the number that comes from the range, and the
+element of "days" that is associated with that particular number.
+
+If we run that again it will it will print out each number so day_num
+took on value 0 the first time, value 1 the second time and so forth,
+going through the list.  So that's the first way that we can actually
+access the data from the list.
+
+Now there's another way of doing it which is a little bit more
+pythonic and that's to actually "for day in days".  We'll just print
+out day and this will let us iterate over the list.  Each time the
+variable day will be set, the first time to the first element of the
+list, the second time through to the second element of the list and so
+forth.  If we run that here we get monday tuesday wednesday thursday
+and friday, which is the more pythonic way to actually access the data
+from the list.
+
+So that's really the basics of accessing, modifying, deleting,
+appending and changing items of list.  Python lists are a very very
+flexible data structure.  Snd that's really all you need to know for
+now about how lists work. Now next time we're going to look at how
+lists perform, but for now, all I really want you to know is how do
+lists work, how do you use them.  And I think we've covered that just
+about enough.  Okay see you next time
+
