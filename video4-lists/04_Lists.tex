@@ -1,0 +1,113 @@
+\documentclass{beamer} % [aspectratio=169]
+\usetheme{ucl}
+\setbeamercolor{banner}{bg=darkred}
+\setbeamersize{description width=2em}
+\setbeamertemplate{navigation symbols}{\vspace{-2ex}} 
+
+\usepackage[T1]{fontenc} % Turn £ into $
+\usepackage{minted}
+\usemintedstyle{emacs}
+
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+\usepackage{url}
+
+\usepackage{natbib}
+\usepackage{bibentry}
+\usepackage{url}
+
+\newenvironment{variableblock}[3]{%
+  \setbeamercolor{block body}{#2}
+  \setbeamercolor{block title}{#3}
+  \begin{block}{#1}}{\end{block}}
+
+\newcommand\emc[1]{\textcolor{midred}{\textbf{#1}}}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+
+\author{Prof.\ Mark Handley \\ University College London, UK}
+\title{Python Lists}
+\subtitle{ENGF2: Design and Professional Skills }
+% \institute{}
+\date{Term 1, 2020}
+
+\begin{document}
+\nobibliography*
+
+\frame{
+\titlepage
+}
+
+\section{Data Structure of the Week}
+
+\begin{frame}
+  \frametitle{Python Lists}
+  Often you need to store a bunch of data.  In python, one way to do this is to use a \emc{list}.
+	\inputminted[
+		xleftmargin=1.4em,
+		%frame=lines,
+		%framesep=2mm,
+		%baselinestretch=1.2,
+		bgcolor=stone,
+		fontsize=\footnotesize,
+		%linenos
+	]{python}{src/interactive_lists.py}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Deleting and Inserting in Python Lists}
+	\inputminted[
+		xleftmargin=1.4em,
+		%frame=lines,
+		%framesep=2mm,
+		%baselinestretch=1.2,
+		bgcolor=stone,
+		fontsize=\footnotesize,
+		%linenos
+	]{python}{src/interactive_lists2.py}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Be careful about copying Lists}
+	\inputminted[
+		xleftmargin=1.4em,
+		%frame=lines,
+		%framesep=2mm,
+		%baselinestretch=1.2,
+		bgcolor=stone,
+		fontsize=\footnotesize,
+		%linenos
+	]{python}{src/interactive_lists3.py}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Iterating over Python Lists}
+	\inputminted[
+		xleftmargin=1.4em,
+		%frame=lines,
+		%framesep=2mm,
+		%baselinestretch=1.2,
+		bgcolor=stone,
+		fontsize=\footnotesize,
+		%linenos
+	]{python}{src/interactive_lists4.py}
+  
+\end{frame}
+
+
+\bibliographystyle{alpha}
+\nobibliography{references}
+
+\end{document}

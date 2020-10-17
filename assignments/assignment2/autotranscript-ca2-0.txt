@@ -1,0 +1,339 @@
+welcome back everyone
+in this video i want to explain the
+second assignment that i'm setting for
+you
+now i'm well aware that there's a very
+wide range
+of backgrounds in terms of how much
+programming you've done before and so
+forth
+so this particular assignment is only
+binary marked which means
+that it's worth one percent overall and
+if you submit a reasonable attempt even
+if you don't complete everything
+you'll get that one percent and the goal
+therefore
+is not to try and test your ability but
+to give you some practice
+so what is the assignment well i'm going
+to give you a game it's actually a very
+simple and pretty dumb game
+and the version i'm going to give you
+has a bunch of bugs in it
+your goal is to find those bugs and
+then hopefully to try and fix those bugs
+now why am i setting you a debugging
+assignment at this point
+well the goal is that you need to learn
+how to
+read through a non-trivial length piece
+of code
+and figure out how it's supposed to work
+and then figure out what's going wrong
+and then figure out how to fix it
+but not just jump in there and start to
+hack the code around because that's
+actually a process that will never
+actually terminate
+so it's been my experience that people
+often learn
+to write code in some kind of a
+theoretical sense but then have real
+trouble when the code doesn't do what
+they expect
+and the way of going through and trying
+to figure out what your code is
+actually doing as opposed to what you
+think it should do
+is a process of debugging now if you
+have to do that to somebody else's code
+then you don't really have any
+preconceptions in your head as to how
+the code
+is supposed to work and so it sort of
+frees you a little bit from the writing
+code aspect of it to think mostly about
+how do i gather the information to
+debugging
+and so giving you some practice of that
+i think will make you into better
+programmers
+okay so what's the assignment actually
+about
+[Music]
+the game for this assignment is based
+very loosely on a game by michael orwin
+from 1981
+for the one kilobyte sinclair zx81
+this game is called react and
+surprisingly addictive
+for the simplicity of the game
+my version of the game is perhaps even
+simpler than the original
+there's nothing firing back at you all
+you have to do is level the buildings to
+create a runway to land the plane
+it's perhaps just a little bit
+politically incorrect but
+it was about the simplest possible game
+i could think of
+now when i was writing the code like all
+code i made mistakes there were bugs in
+my code
+and i simply kept notes on what those
+bugs were and when i finished writing it
+i've added a bunch of those bugs back
+particularly ones i thought were
+representative the sort of bugs that
+crop up
+all the time your challenge is to find
+the bugs
+they won't actually be very hard to find
+because the game's actually pretty much
+unplayable unless you fix them
+so find the bug try and read the code to
+figure out what the code was supposed to
+do
+what did i get wrong is it a simple
+error did i actually miss something out
+figure out what's wrong in the code and
+then write
+the very small amount of code to fix
+them typically it'll be a very very
+small change to the code or maybe a
+couple of additional lines nothing more
+than that
+so that's your challenge find the bugs
+fix them
+and what you'll find in the in the
+github repository for this assignment
+is three different versions of the code
+what you have is bomber oo bomber big
+loop and bomber proc
+you only have to try and fix the bugs in
+one version of the code
+but what i've done is to write the code
+in three very different programming
+styles
+in order for you to get a feel for what
+these different styles look like
+so if you've done a lot of programming
+before
+you probably have come across
+object-oriented programming
+and bomber00 is an object-oriented
+solution to this
+so there are a whole bunch of of classes
+which basically define new data types
+so for example as a class for a building
+and this if you're used to an object
+oriented style
+basically should let you localize
+code to particular objects buildings the
+plane and things like that
+and that actually might help you debug
+the code
+on the other hand if you're not used to
+an object or interstellar programming
+then that probably is a bit more
+difficult than it needs to be for you
+so i also have a version which is
+written in a procedural style
+and so for example this one has a lot of
+functions
+init building is inside building and so
+forth
+again those mean that the code is at
+least a little bit self-explanatory in
+terms of what each of these functions is
+trying to do because they have
+sensible names and i make pretty
+extensive use of python lists
+for passing data in and out of those
+functions for example holding x
+y coordinates as a python list and
+things like that
+so that's a reasonably natural way of
+programming
+and a little bit self-explanatory just
+be due to the function names in the
+variable names
+and then the third version is python big
+loop
+now python big loop declares no
+functions
+no classes all variables are global
+variables
+and there's quite a lot of them and when
+you get down to the actual code there's
+one
+very large loop which deals with
+everything that happens in the game
+now i'm giving you this not because i
+say it's a good style of programming
+it is not a good style of programming
+what i want you to do though is to see
+the difference between code written that
+way and code written in either a
+procedural or an object-oriented way
+the problem with the big loop style of
+programming in is that it doesn't sort
+of self-document what any of the bits of
+the code are trying to do
+on the other hand if you're not used to
+writing things in functions and you're
+not used to writing things in objects
+then it might feel like a more natural
+way of coding
+in my experience a lot of inexperienced
+programmers
+write code in this big loop style and
+once the code gets to a certain size it
+becomes very hard to deal with so
+if you feel like working with the big
+loop version of the code
+feel free but i personally wouldn't
+recommend it
+i think you'd probably better go for
+either the procedural or the objective
+when doing things but if you're happy
+with that that's fine i don't have a
+problem with that you'll still gain a
+lot of experience of trying to debug the
+code
+but i would encourage you to look
+through at least skim through the three
+different versions of the code
+and start to get a feeling for maybe how
+they work
+before you actually leap in and try and
+actually decide which one you're going
+to work with
+[Music]
+so how should you go about trying to
+debug the code
+well all three of these versions are
+roughly
+300 lines of code now by many program
+sizes 300 lines of code is a pretty
+small program
+but it's still too big for you to just
+start reading at the top read all the
+way through to the bottom
+and understand the code and hold it in
+your head so
+that approach isn't going to work so
+what should you do
+well i would suggest that you start by
+just skimming through the code get a
+layer of the land
+if you're looking at the procedural
+version for example
+figure out briefly what functions
+actually exist but don't worry about
+what they do
+if you're looking at the object oriented
+version look at what classes exist and
+then what methods
+are on those classes so get a rough idea
+of what this what the
+lay of the land is okay but don't worry
+about trying to understand
+all the detail because you're not going
+to be able to do that on the first pass
+so once you find your first bug then
+you'll get some idea of
+what it's related to in the code is it
+related to the plane is it related to
+the bomb what's it related to
+so then you start to look into the code
+and find the code that's related to that
+functionality
+and then you learn a little bit more by
+reading the code to figure out what you
+think it
+maybe should do and then
+i would encourage you then to start to
+add print statements to the code
+print out the code to find out well what
+execution path does it take
+print out the values of variables to
+find out what state they hold when
+things are working
+and what they hold after things stop
+working and
+in that way you'll start to build up a
+mental picture of what the code's
+actually doing when it's working right
+and what it's doing when it goes wrong
+and eventually you'll get an aha moment
+like oh
+yeah i get it now i understand but
+it that understanding doesn't come
+immediately it comes from
+gathering pieces of evidence small piece
+of information it's a little like
+sherlock holmes tried to solve her who
+done it
+gathers clues all over the place and
+eventually those clues come together
+into a picture and you get ah
+now i know how the code is supposed to
+work and i can see when it goes wrong
+and at that point you know where the bug
+is
+and actually fixing the bug is usually
+pretty simple once you've found the bug
+so that's the general approach i'd
+encourage you to take
+so that's your assignment for this week
+debug the bomber game
+now i'm well aware that there's a very
+large range of backgrounds that you have
+some of you have done a ton of
+programming before and some of you have
+not done very much
+for those of you who have not done very
+much i don't expect you to be able to
+succeed
+on this assignment without some help so
+your first port of call
+should be to ask any questions you have
+on piazza
+don't be afraid if you think they might
+be stupid questions there are no stupid
+questions
+if you are worried about embarrassing
+yourself
+please feel free to ask anonymous
+questions that's absolutely fine with me
+but please make sure the questions are
+public questions
+so that anything we answer can also help
+anybody else because if you have a
+question
+you're pretty sure that there will be a
+bunch of other people have a very
+similar question
+and so we can actually help out more
+people than just you if you make it a
+public question
+now if you're still stuck then
+please just don't bash your head against
+the wall for a long time come along to
+one of the programming clinics
+and then we can help you out one on one
+and get rid of any misconceptions that
+you have
+and help you make further progress this
+coursework is designed so that we expect
+quite a few of you will need help that's
+absolutely fine
+come and ask for help when you need it
+don't just sit there stuck
+okay so that's your assignment
+hopefully you'll have some fun doing it
+we'll see you on piazza we'll see you in
+the interactive programming clinics
+so good luck

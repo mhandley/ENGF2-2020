@@ -1,0 +1,118 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{amsmath}	
+	
+\title{Design \& Professional Skills\\
+  Assignment 2: Debugging the {\em Bomber} Game}
+\author{}
+\date{}
+	
+\begin{document}
+
+\maketitle
+
+\section*{Instructions}
+
+In the {\tt mhandley/ENGF2-2020} github repository there are three
+Python programs in the {\tt Assignments/assignment2} directory.  These
+are three implementations of exactly the same very simple very dumb
+{\em Bomber} game. This game is a re-implementation of a game written for
+the Sinclair ZX81 which originally ran in 1 KByte of RAM.
+
+The objective of the game is to level the city by dropping bombs on
+the buildings so you can land the plane.  The plane gets lower each
+time it crosses the screen.  If you fly into a building, you die.  If
+you succeed in flattening all the buildings, you can land the plane
+and score 1000 points.  Your reward is to start all over again, but
+with narrower buildings that are harder to hit.  
+
+The three versions of the game should behave identically, but are written in different programming styles:
+\begin{itemize}
+\item {\tt bomber\_bigloop.py} uses a lot of global variables and one big main loop.
+\item{\tt bomber\_proc.py} uses a procedural style, with fewer global variables and breaks the code into many functions.  It makes extensive use of python lists to pass data into and out of these functions.
+\item{\tt bomber\_oo.py} uses an object-oriented style, defining classes for the plane, buildings, etc, and functions that operate on those classes.
+\end{itemize}
+The game requires python 3 and tkinter.
+
+The problem is that the games have bugs.  \textbf{All three games have the same five bugs}.  Your task is:
+\begin{enumerate}
+\item Play the game.
+\item Find a bug.
+\item Write a brief bug report describing the bug.
+\item Identify the cause of the bug.  Write a brief summary of the cause.
+\item Fix the bug.
+\item Repeat from 1.
+\end{enumerate}
+
+\subsection*{Bug Reports}
+
+A bug report should be brief and to the point.  It should include:
+\begin{itemize}
+\item One sentence summary of the bug.
+\item Description of what happens.
+\item Description of what you think should happen.
+\item Instructions for how to reproduce the bug.
+\end{itemize}
+
+\subsection*{Understanding the bug}
+
+Once you've written the bug report, look at the code.  You can look at
+all three versions, or just one version --- whatever you find easiest.
+
+Identify what the code is doing when the bug is triggered.  Sometimes
+the cause may be obvious from reading the code.  Often the cause is
+not obvious, and even the flow of the code may not be obvious.  Then
+you will need to instrument the code to figure out what it is doing.
+In this case, I just want you to instrument the code using
+\texttt{print()} - there's no need to use a debugger.  Generally, you
+want to instrument the code without changing its behaviour until you
+gather enough information to understand what the code is actually
+doing (and hence why it differs from what it should be doing).
+
+Another common debugging technique is to reduce the code complexity by
+removing code to reduce it to the simplest case that still exhibits
+the buggy behaviour.  This is a valuable technique when a bug is hard
+to reproduce.
+
+Another technique is to make things more deterministic.  For example,
+in this game, the buildings are randomly generated heights.  You might
+call \texttt{random.seed(x)} with a constant parameter \texttt{x}, so
+the buildings are always generated the same way.  By manually choosing
+different values of \texttt{x} you can settle on one that makes it
+simpler to generate the buggy behaviour in a repeatable manner.  Of
+course you'd then need to remove the fixed seed later, when you've fixed
+the bug.
+
+In general, you're hunting for evidence until you've found out what
+the program is actually doing.  Only when you understand what the
+program is doing should you think about how to fix it.
+
+\subsection{Fixing the bugs}
+
+These bugs are very simple.  Some are one line fixes, none requires
+more than about three lines of extra code to fix.  \textbf{You only
+  need to fix the bugs in one of the three versions of the code}, but
+you can choose which version you work with.
+
+\subsection*{Assessment}
+
+This assignment is not assessed.  The purpose of the assignment is to
+give you practice reading, understanding, and debugging a non-trivial
+piece of code.  You many work with your friends on this assignment if
+you wish.  You must hand in a reasonable attempt via Moodle to receive
+a binary mark, as we want to see how you are progressing.  Hand in a
+zipfile containing the text of your bug reports, you brief
+explanations of the causes of the bugs, and the python source code of
+\textbf{one} of the three versions of the game with the bugs fixed.
+
+\subsection*{Optional Extra}
+
+A few members of the class are more experienced programmers.  If you
+find fixing the bugs easy, once you've fixed them, consider extending
+the game.  For example, the bomb does not obey any reasonable physics
+at the moment.  The game would be better if it fell in a more
+realistic manner.  There will be a separate submission area on Moodle
+for game extensions.  You won't get any extra marks, but we are
+curious what you can achieve.
+\end{document}
