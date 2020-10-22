@@ -1,0 +1,505 @@
+welcome back everyone
+in this video i'm going to introduce you
+to your third assignment which is
+frogger. frogger is really a very simple
+game:
+all you've got to do is get your frog
+across the road
+without getting splattered like that.
+or that.
+that's better onto the turtles onto the
+logs
+more turtles another log and then
+get into one of the homes at the top and
+you need to do that for
+all of the frogs you have that's it
+that's the whole game
+so just like the previous assignment the
+version of the code i'm going to give
+you
+has a bunch of bugs and your task
+is to find the bugs and to fix them
+now unlike the the bomber came the the
+code for
+frogger is a little bit more complicated
+there's a bit more code there
+unlike the the previous assignment i'm
+going to give you only one version
+now the programming style i'm using for
+this is an object-oriented programming
+style
+because you've seen objects now and you
+understand what they're supposed to be
+used for
+the second difference is that unlike in
+the bomber game
+the the code for frogger is split over
+multiple files
+and that's very common as you start to
+write larger pieces of code
+you divide the functionality up into
+functionally separate pieces and you put
+those functionally separate pieces
+into different files and that just helps
+you to organize things
+it's clearer where things are it's all
+in one great big file it's very hard to
+navigate
+and finally i'm using the frogger game
+as an example of a design pattern
+and to understand what i mean by that i
+think i'd better talk a little bit more
+detail about how the game is structured
+so with the bomber program all the code
+was not only in one file
+but it was all a little bit mixed up
+so even if you use the object oriented
+version of the play of the
+with the game then you might have had
+code for a plane
+and what did that code for the plane do
+well it handled things like the plane
+moving
+things like the plane landing but at the
+same time
+it also did the drawing of the plane on
+the screen
+so the graphics and things were handled
+by that
+and it also did the interactions with
+the user
+like dropping the bomb and so this means
+that
+all of the code corresponding to that
+plane is is mixed up together and it
+makes it quite hard to actually
+understand the code once the code gets
+beyond a certain level of complexity
+now the bomber game is sufficiently
+simple that wasn't really a problem
+but with the frogger game it's starting
+to get to a level of complexity
+where if you mix up all the code like
+that so you're handling all of the
+graphics drawing but also the logic of
+how the
+the different objects interact with each
+other and things like that it starts to
+get quite complicated and it's difficult
+to really understand
+how the pieces should interact which
+piece of the code should
+be doing which functionality and so
+rather than
+glomming it all together like this we're
+going to adopt a different model for our
+frogger game
+so what's the alternative to having
+everything mixed together like that
+i mean actually if you think about it it
+feels reasonably natural that all of the
+code that's associated with the plane is
+in one place
+but it turns out actually it's not the
+best way to do it
+and the reason it's not the best way to
+do it is because the really essential
+things about being a plane
+are how it moves and interacts with the
+other objects
+and then nothing to do with all the
+graphics and things that's displaying it
+now if we look at the frogger game for
+example the
+the game logic associated with being a
+frog
+is completely separable from how it's
+displayed to the user
+so what you care about if you're a frog
+is how do you
+jump where do you move to what are the
+interactions between
+the frog and the cars usually pretty bad
+what are the interactions between the
+frog and the logs
+hopefully somewhat better and that's the
+interaction between the actual
+game logic of the different elements of
+the game that's the part that actually
+it matters and it's important to get
+right from the point of view of
+the structure of your game separate from
+that
+is how you actually view it what are the
+fancy graphics is it black and white is
+it high resolution whatever that's a
+separate thing
+and so we can carve out the graphics and
+keep it to one side so that it doesn't
+interfere with making sure that we've
+got the game logic right
+now the design the design pattern which
+actually fits this
+quite well and so what's a design
+pattern
+design pattern is very simple it's just
+a structure that other people have found
+useful in the past
+and therefore it's worth maybe reusing
+if it seems appropriate
+and the one we're going to use for our
+game is known as model
+view controller so the model
+is the all the game logic it's the stuff
+that's essential about
+say the frog or the car is how do you
+model that
+the view is simply the part of your code
+that handles the graphics showing things
+to the user
+and the controller that's
+associated with how does the user
+interact with the game
+and to some extent it glues other things
+together
+so if we look at sort of the very
+essence of the game
+the very essence of the game is the
+model
+the model in our case includes the frog
+the cars the logs and so forth and how
+do they interact with each other
+and none of that cares with it being
+displayed it's just how do the
+how do the objects of the game interact
+with each other
+separately we have a view
+and the view is the bit that handles all
+of the graphics on the screen
+and so what happens is the model doesn't
+actually care about how it's displayed
+but it updates the view
+it updates the view by saying the frog's
+move to here
+or the log has moved to there and so
+forth
+and so if you've got a user who's
+playing the game the user sees the view
+he sees um the user doesn't care about
+seeing the model they only interact with
+it view the through the view
+and then separately we've got this third
+part the controller
+and the user interacts with the
+controller
+in order to actually play the game and
+then the controller
+then basically updates
+the model with what the user wants the
+model to do
+so this separates out the pieces the
+user is interacting with the controller
+the model is getting on with doing all
+the interactions between things like the
+frog
+and the logs and the cars and things
+like that and the view is handling all
+of the graphics
+when you look at the code structure then
+you no longer have any of the
+complicated part to do with all the
+graphics
+mixed up with the model because it
+doesn't matter
+all the interactions in here are between
+the elements in the game in a more of an
+abstract sense
+and then this doesn't really care about
+whether the frog got splattered by a car
+or not
+all it's doing is displaying what it's
+told to display but
+separable and this way you can keep your
+code much cleaner
+because each part is only dealing with
+the essence of that part
+now in our version of the
+frogger game i haven't quite implemented
+it exactly this way
+it's pretty close the model and the view
+are essentially exactly this way
+but sometimes because of the way the
+object hierarchy and things go and
+because
+of the user interface toolkits we use
+sometimes it's better to slightly change
+this
+and so what we end up with in our
+version
+it's functionally pretty similar to this
+the controller
+obviously still gets input from the user
+and
+so that still controls the model in the
+same way it updates the model
+with the users but then
+rather than the model and the view
+talking to each other directly
+it's often more useful to actually do
+these
+updates of the model
+so that updates where the frog is and
+that gets passed through the controller
+to the view
+and so really the controller is also
+certainly serving as plumbing here
+and then of course the user sees the
+model
+and so this is essentially the the way
+we're going to structure our version of
+model view controller
+all the game model just passes its its
+updates of what is being changed the
+objects
+whether a new cars appeared and so forth
+through to the view and it passes
+through the controller and this
+effectively is implementing the same
+thing as this it's just a little bit
+easier to structure the code sometimes
+to do this version of it rather than
+this version of it
+okay so let's actually have a look at
+the code so get an idea of the lay of
+the land here
+if you actually look at all of the files
+that come with the game
+there's actually quite a lot um so the
+first thing is to actually just
+let's just look at the files that are
+only the python
+files so figure out what we've actually
+got and
+actually there's really only six python
+files here
+and one of them frogger.pie is the one
+that you actually used to start the game
+so if we look inside frogger.pie
+this is where everything starts and
+actually there's very little in here
+all pi does is to basically import the
+controller class
+and it imports that instantiates a new
+controller
+and says run okay
+and that gets the game running so
+there's not much in there that's really
+just a sort of a shim there to actually
+start off
+the the controller and so it looks like
+the controller does everything else
+so from here we can look inside the
+controller
+and in the controller a lot of things
+happen a lot of initialization goes on
+inside here
+and so this is really why i put the
+controller in the middle
+rather than in terms of the view on the
+one side because
+unfortunately the interactions
+in terms of the keyboard needs to be
+through the same graphical toolkit
+as the graphics and so i can't
+completely separate the controller from
+the view in that sense and that's why i
+put
+it in the middle in this here and so
+what we're using is we're using the tk
+inter graphics toolkit to actually do
+things
+and that will be initialized in the
+controller but then it's passed through
+to the view
+and the view will then actually do all
+the display of stuff
+but i still need to have it in the
+controller because i need to be able to
+actually access
+the keyboard inputs and they're also
+done through tk inter
+so that's why i put the controller in
+the middle in this version
+so anyway inside the controller we
+actually define a controller class
+and this class actually handles all of
+the control inputs it handles the
+plumbing backwards and forwards between
+the model and the view
+and it also handles the uh all the
+things to do with the keyboard inputs
+and so there's lots of messages here
+which are to do with passing things
+backwards and forwards
+through the controller between the model
+and the view
+and there's also everything in here to
+do with when keys get pressed this is
+the key bindings and so forth and then
+when you actually call run to start this
+off
+then it's going to actually go through
+and this is the
+full main loop of the code in here it's
+going to
+once the code is up and running and
+everything's initialized it's going to
+call update on the model
+then for any views that we have
+registered we're going to call update on
+the views
+and then it's going to update the
+graphics toolkit
+to display things and then there's a
+bunch of stuff in here which is just due
+to keeping track of the frame rate and
+things like that
+so this is the main loop of the code it
+alternates between
+updating the model updating the view and
+updating the graphics toolkit and just
+go round and round and round doing that
+now way back at the top of here when we
+actually created
+our controller remember we haven't got
+any model or view
+built when we fire things off so the
+controller is actually going to have to
+do the job of creating those
+and so in here this is where we actually
+create the model for the game
+and then we also create a view
+and then once we've got the the model
+and the view we tell the game
+okay model go and activate yourself get
+ready to actually play the game and so
+that's kind of the main plumbing that
+goes on in the controller
+the next thing we can look at is we can
+look at the model
+and in the model there's a lot of
+different objects if we go right down to
+the bottom of the file
+somewhere here there we go there's
+actually the class for the model itself
+and when we initialize that it keeps
+track of who the controller is
+it resets a bunch of stuff and then it
+creates the game objects it creates a
+frog and registers that with the
+controller
+it creates a bunch of logs it creates a
+bunch of cars it creates the
+homes for the race and things like that
+and then
+after that right down the bottom of this
+file is the main update loop
+for the the model and while the game's
+running
+it's going to call move objects it's
+going to tell the controller to update
+the score
+it's going to check what the frog's
+doing what the condition it is
+and then it does some stuff to check
+with the speed of the game to make sure
+we keep the frame rate more or less what
+it should do
+this is the main loop of the model most
+of the actual action happens within move
+objects
+and check frog but i'm going to leave
+that for you to figure out for yourself
+and the other main piece of code here
+is the view and
+again down the bottom of the
+file here is the main class for the view
+here which takes the
+screen essentially the root window of
+the of the game
+and it initializes all its sorts of
+stuff which are very different from the
+things that are initialized in the model
+it initializes a canvas to draw in it
+packs it initializes fonts
+and so on and basically all this stuff
+is to do with displaying all of the
+things
+on the screen and it doesn't actually
+handle the interaction between anything
+it
+just does what it's told to do the
+display now in order to do that
+there's a load of other classes in here
+there's a game object view class
+which then there are instances of that
+so there's a log view
+there's a turtle view there's a car view
+and so forth
+and each of these basically specialize
+the idea of something that's drawable on
+the screen
+and so that's the essence of what's
+going on within the view the view is all
+about displaying different types of
+things
+the model is all about modeling the
+actual
+game itself and the interaction between
+things like the frogs the cars and the
+logs
+and the controller is the plumbing for
+everything else and that's roughly
+speaking of the lay of the land of the
+game
+now i'll leave it to you to figure out
+exactly where the bugs lie
+but if they're in the actual interaction
+between the objects
+likely they are in the model if they're
+in the graphics that you see displayed
+on the screen
+but not in how the graphics interact
+likely they're in the view
+it gives you some rough idea of delay of
+the land
+okay so now it's time for you to go and
+start debugging
+what are you going to do well remember
+the main ways you go about debugging
+are gather information and that'll
+probably involve you putting a lot of
+print statements into the code to try
+and figure out what's going on
+the second thing that you want to be
+able to do when you're debugging is to
+try and make the bugs reproducible
+so if you can make life simpler for
+yourself by temporarily modifying the
+code
+to make it so that you can actually
+reproduce your bug more easily
+please go ahead and do so and then make
+sure you keep track of what you've done
+so that you can reverse those changes
+later so that's the idea
+make the bugs reproducible and then
+gather data
+and gather data and gather data until
+you figure out what's
+actually going on and then think about
+how to fix it
+okay that's it for this video hope
+you're going to have fun with the
+debugging
+see you next time

@@ -1,0 +1,994 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" width="1200" height="630" onload="init(evt)" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<!-- Flame graph stack visualization. See https://github.com/brendangregg/FlameGraph for latest version, and http://www.brendangregg.com/flamegraphs.html for examples. -->
+<!-- NOTES:  -->
+<defs >
+	<linearGradient id="background" y1="0" y2="1" x1="0" x2="0" >
+		<stop stop-color="#eeeeee" offset="5%" />
+		<stop stop-color="#eeeeb0" offset="95%" />
+	</linearGradient>
+</defs>
+<style type="text/css">
+	.func_g:hover { stroke:black; stroke-width:0.5; cursor:pointer; }
+</style>
+<script type="text/ecmascript">
+<![CDATA[
+	var details, searchbtn, matchedtxt, svg;
+	function init(evt) {
+		details = document.getElementById("details").firstChild;
+		searchbtn = document.getElementById("search");
+		matchedtxt = document.getElementById("matched");
+		svg = document.getElementsByTagName("svg")[0];
+		searching = 0;
+	}
+
+	// mouse-over for info
+	function s(node) {		// show
+		info = g_to_text(node);
+		details.nodeValue = "Function: " + info;
+	}
+	function c() {			// clear
+		details.nodeValue = ' ';
+	}
+
+	// ctrl-F for search
+	window.addEventListener("keydown",function (e) {
+		if (e.keyCode === 114 || (e.ctrlKey && e.keyCode === 70)) {
+			e.preventDefault();
+			search_prompt();
+		}
+	})
+
+	// functions
+	function find_child(parent, name, attr) {
+		var children = parent.childNodes;
+		for (var i=0; i<children.length;i++) {
+			if (children[i].tagName == name)
+				return (attr != undefined) ? children[i].attributes[attr].value : children[i];
+		}
+		return;
+	}
+	function orig_save(e, attr, val) {
+		if (e.attributes["_orig_"+attr] != undefined) return;
+		if (e.attributes[attr] == undefined) return;
+		if (val == undefined) val = e.attributes[attr].value;
+		e.setAttribute("_orig_"+attr, val);
+	}
+	function orig_load(e, attr) {
+		if (e.attributes["_orig_"+attr] == undefined) return;
+		e.attributes[attr].value = e.attributes["_orig_"+attr].value;
+		e.removeAttribute("_orig_"+attr);
+	}
+	function g_to_text(e) {
+		var text = find_child(e, "title").firstChild.nodeValue;
+		return (text)
+	}
+	function g_to_func(e) {
+		var func = g_to_text(e);
+		// if there's any manipulation we want to do to the function
+		// name before it's searched, do it here before returning.
+		return (func);
+	}
+	function update_text(e) {
+		var r = find_child(e, "rect");
+		var t = find_child(e, "text");
+		var w = parseFloat(r.attributes["width"].value) -3;
+		var txt = find_child(e, "title").textContent.replace(/\([^(]*\)$/,"");
+		t.attributes["x"].value = parseFloat(r.attributes["x"].value) +3;
+
+		// Smaller than this size won't fit anything
+		if (w < 2*12*0.59) {
+			t.textContent = "";
+			return;
+		}
+
+		t.textContent = txt;
+		// Fit in full text width
+		if (/^ *$/.test(txt) || t.getSubStringLength(0, txt.length) < w)
+			return;
+
+		for (var x=txt.length-2; x>0; x--) {
+			if (t.getSubStringLength(0, x+2) <= w) {
+				t.textContent = txt.substring(0,x) + "..";
+				return;
+			}
+		}
+		t.textContent = "";
+	}
+
+	// zoom
+	function zoom_reset(e) {
+		if (e.attributes != undefined) {
+			orig_load(e, "x");
+			orig_load(e, "width");
+		}
+		if (e.childNodes == undefined) return;
+		for(var i=0, c=e.childNodes; i<c.length; i++) {
+			zoom_reset(c[i]);
+		}
+	}
+	function zoom_child(e, x, ratio) {
+		if (e.attributes != undefined) {
+			if (e.attributes["x"] != undefined) {
+				orig_save(e, "x");
+				e.attributes["x"].value = (parseFloat(e.attributes["x"].value) - x - 10) * ratio + 10;
+				if(e.tagName == "text") e.attributes["x"].value = find_child(e.parentNode, "rect", "x") + 3;
+			}
+			if (e.attributes["width"] != undefined) {
+				orig_save(e, "width");
+				e.attributes["width"].value = parseFloat(e.attributes["width"].value) * ratio;
+			}
+		}
+
+		if (e.childNodes == undefined) return;
+		for(var i=0, c=e.childNodes; i<c.length; i++) {
+			zoom_child(c[i], x-10, ratio);
+		}
+	}
+	function zoom_parent(e) {
+		if (e.attributes) {
+			if (e.attributes["x"] != undefined) {
+				orig_save(e, "x");
+				e.attributes["x"].value = 10;
+			}
+			if (e.attributes["width"] != undefined) {
+				orig_save(e, "width");
+				e.attributes["width"].value = parseInt(svg.width.baseVal.value) - (10*2);
+			}
+		}
+		if (e.childNodes == undefined) return;
+		for(var i=0, c=e.childNodes; i<c.length; i++) {
+			zoom_parent(c[i]);
+		}
+	}
+	function zoom(node) {
+		var attr = find_child(node, "rect").attributes;
+		var width = parseFloat(attr["width"].value);
+		var xmin = parseFloat(attr["x"].value);
+		var xmax = parseFloat(xmin + width);
+		var ymin = parseFloat(attr["y"].value);
+		var ratio = (svg.width.baseVal.value - 2*10) / width;
+
+		// XXX: Workaround for JavaScript float issues (fix me)
+		var fudge = 0.0001;
+
+		var unzoombtn = document.getElementById("unzoom");
+		unzoombtn.style["opacity"] = "1.0";
+
+		var el = document.getElementsByTagName("g");
+		for(var i=0;i<el.length;i++){
+			var e = el[i];
+			var a = find_child(e, "rect").attributes;
+			var ex = parseFloat(a["x"].value);
+			var ew = parseFloat(a["width"].value);
+			// Is it an ancestor
+			if (0 == 0) {
+				var upstack = parseFloat(a["y"].value) > ymin;
+			} else {
+				var upstack = parseFloat(a["y"].value) < ymin;
+			}
+			if (upstack) {
+				// Direct ancestor
+				if (ex <= xmin && (ex+ew+fudge) >= xmax) {
+					e.style["opacity"] = "0.5";
+					zoom_parent(e);
+					e.onclick = function(e){unzoom(); zoom(this);};
+					update_text(e);
+				}
+				// not in current path
+				else
+					e.style["display"] = "none";
+			}
+			// Children maybe
+			else {
+				// no common path
+				if (ex < xmin || ex + fudge >= xmax) {
+					e.style["display"] = "none";
+				}
+				else {
+					zoom_child(e, xmin, ratio);
+					e.onclick = function(e){zoom(this);};
+					update_text(e);
+				}
+			}
+		}
+	}
+	function unzoom() {
+		var unzoombtn = document.getElementById("unzoom");
+		unzoombtn.style["opacity"] = "0.0";
+
+		var el = document.getElementsByTagName("g");
+		for(i=0;i<el.length;i++) {
+			el[i].style["display"] = "block";
+			el[i].style["opacity"] = "1";
+			zoom_reset(el[i]);
+			update_text(el[i]);
+		}
+	}
+
+	// search
+	function reset_search() {
+		var el = document.getElementsByTagName("rect");
+		for (var i=0; i < el.length; i++) {
+			orig_load(el[i], "fill")
+		}
+	}
+	function search_prompt() {
+		if (!searching) {
+			var term = prompt("Enter a search term (regexp " +
+			    "allowed, eg: ^ext4_)", "");
+			if (term != null) {
+				search(term)
+			}
+		} else {
+			reset_search();
+			searching = 0;
+			searchbtn.style["opacity"] = "0.1";
+			searchbtn.firstChild.nodeValue = "Search"
+			matchedtxt.style["opacity"] = "0.0";
+			matchedtxt.firstChild.nodeValue = ""
+		}
+	}
+	function search(term) {
+		var re = new RegExp(term);
+		var el = document.getElementsByTagName("g");
+		var matches = new Object();
+		var maxwidth = 0;
+		for (var i = 0; i < el.length; i++) {
+			var e = el[i];
+			if (e.attributes["class"].value != "func_g")
+				continue;
+			var func = g_to_func(e);
+			var rect = find_child(e, "rect");
+			if (rect == null) {
+				// the rect might be wrapped in an anchor
+				// if nameattr href is being used
+				if (rect = find_child(e, "a")) {
+				    rect = find_child(r, "rect");
+				}
+			}
+			if (func == null || rect == null)
+				continue;
+
+			// Save max width. Only works as we have a root frame
+			var w = parseFloat(rect.attributes["width"].value);
+			if (w > maxwidth)
+				maxwidth = w;
+
+			if (func.match(re)) {
+				// highlight
+				var x = parseFloat(rect.attributes["x"].value);
+				orig_save(rect, "fill");
+				rect.attributes["fill"].value =
+				    "rgb(230,0,230)";
+
+				// remember matches
+				if (matches[x] == undefined) {
+					matches[x] = w;
+				} else {
+					if (w > matches[x]) {
+						// overwrite with parent
+						matches[x] = w;
+					}
+				}
+				searching = 1;
+			}
+		}
+		if (!searching)
+			return;
+
+		searchbtn.style["opacity"] = "1.0";
+		searchbtn.firstChild.nodeValue = "Reset Search"
+
+		// calculate percent matched, excluding vertical overlap
+		var count = 0;
+		var lastx = -1;
+		var lastw = 0;
+		var keys = Array();
+		for (k in matches) {
+			if (matches.hasOwnProperty(k))
+				keys.push(k);
+		}
+		// sort the matched frames by their x location
+		// ascending, then width descending
+		keys.sort(function(a, b){
+			return a - b;
+		});
+		// Step through frames saving only the biggest bottom-up frames
+		// thanks to the sort order. This relies on the tree property
+		// where children are always smaller than their parents.
+		var fudge = 0.0001;	// JavaScript floating point
+		for (var k in keys) {
+			var x = parseFloat(keys[k]);
+			var w = matches[keys[k]];
+			if (x >= lastx + lastw - fudge) {
+				count += w;
+				lastx = x;
+				lastw = w;
+			}
+		}
+		// display matched percent
+		matchedtxt.style["opacity"] = "1.0";
+		pct = 100 * count / maxwidth;
+		if (pct == 100)
+			pct = "100"
+		else
+			pct = pct.toFixed(1)
+		matchedtxt.firstChild.nodeValue = "Matched: " + pct + "%";
+	}
+	function searchover(e) {
+		searchbtn.style["opacity"] = "1.0";
+	}
+	function searchout(e) {
+		if (searching) {
+			searchbtn.style["opacity"] = "1.0";
+		} else {
+			searchbtn.style["opacity"] = "0.1";
+		}
+	}
+]]>
+</script>
+<rect x="0.0" y="0" width="1200.0" height="630.0" fill="url(#background)"  />
+<text text-anchor="middle" x="600.00" y="24" font-size="17" font-family="Verdana" fill="rgb(0,0,0)"  >Flame Graph: access middle of list</text>
+<text text-anchor="" x="10.00" y="613" font-size="12" font-family="Verdana" fill="rgb(0,0,0)" id="details" > </text>
+<text text-anchor="" x="10.00" y="24" font-size="12" font-family="Verdana" fill="rgb(0,0,0)" id="unzoom" onclick="unzoom()" style="opacity:0.0;cursor:pointer" >Reset Zoom</text>
+<text text-anchor="" x="1090.00" y="24" font-size="12" font-family="Verdana" fill="rgb(0,0,0)" id="search" onmouseover="searchover()" onmouseout="searchout()" onclick="search_prompt()" style="opacity:0.1;cursor:pointer" >Search</text>
+<text text-anchor="" x="1090.00" y="613" font-size="12" font-family="Verdana" fill="rgb(0,0,0)" id="matched" > </text>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_Free (99 samples, 0.33%)</title><rect x="1050.7" y="389" width="3.9" height="15.0" fill="rgb(245,224,17)" rx="2" ry="2" />
+<text text-anchor="" x="1053.67" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`object_vacall (7 samples, 0.02%)</title><rect x="999.6" y="213" width="0.3" height="15.0" fill="rgb(236,157,21)" rx="2" ry="2" />
+<text text-anchor="" x="1002.59" y="223.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`builtin_len (3 samples, 0.01%)</title><rect x="999.0" y="357" width="0.1" height="15.0" fill="rgb(234,126,43)" rx="2" ry="2" />
+<text text-anchor="" x="1002.00" y="367.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyDict_GetItem (198 samples, 0.67%)</title><rect x="10.0" y="421" width="7.9" height="15.0" fill="rgb(247,55,26)" rx="2" ry="2" />
+<text text-anchor="" x="13.00" y="431.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`0x2 (29,685 samples, 100.00%)</title><rect x="10.0" y="565" width="1180.0" height="15.0" fill="rgb(230,35,16)" rx="2" ry="2" />
+<text text-anchor="" x="13.00" y="575.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python`0x2</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`list_append (73 samples, 0.25%)</title><rect x="1003.8" y="357" width="2.9" height="15.0" fill="rgb(227,188,32)" rx="2" ry="2" />
+<text text-anchor="" x="1006.85" y="367.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyEval_EvalCode (29,685 samples, 100.00%)</title><rect x="10.0" y="453" width="1180.0" height="15.0" fill="rgb(247,44,9)" rx="2" ry="2" />
+<text text-anchor="" x="13.00" y="463.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python`PyEval_EvalCode</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_bufferedwriter_raw_write (5 samples, 0.02%)</title><rect x="999.6" y="117" width="0.2" height="15.0" fill="rgb(251,41,36)" rx="2" ry="2" />
+<text text-anchor="" x="1002.59" y="127.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyCFunction_FastCallDict (7 samples, 0.02%)</title><rect x="999.6" y="197" width="0.3" height="15.0" fill="rgb(248,61,17)" rx="2" ry="2" />
+<text text-anchor="" x="1002.59" y="207.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyObject_Free (637 samples, 2.15%)</title><rect x="868.1" y="405" width="25.4" height="15.0" fill="rgb(225,116,39)" rx="2" ry="2" />
+<text text-anchor="" x="871.14" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >P..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyErr_Restore (41 samples, 0.14%)</title><rect x="449.3" y="389" width="1.7" height="15.0" fill="rgb(223,192,31)" rx="2" ry="2" />
+<text text-anchor="" x="452.32" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`recursive_issubclass (15 samples, 0.05%)</title><rect x="1006.8" y="373" width="0.6" height="15.0" fill="rgb(244,92,36)" rx="2" ry="2" />
+<text text-anchor="" x="1009.83" y="383.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyMethodDescr_FastCallKeywords (178 samples, 0.60%)</title><rect x="1000.3" y="389" width="7.1" height="15.0" fill="rgb(250,73,38)" rx="2" ry="2" />
+<text text-anchor="" x="1003.35" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyMethodDef_RawFastCallDict (12 samples, 0.04%)</title><rect x="999.6" y="261" width="0.4" height="15.0" fill="rgb(228,114,21)" rx="2" ry="2" />
+<text text-anchor="" x="1002.55" y="271.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`buffered_flush_and_rewind_unlocked (7 samples, 0.02%)</title><rect x="999.6" y="149" width="0.3" height="15.0" fill="rgb(228,155,53)" rx="2" ry="2" />
+<text text-anchor="" x="1002.59" y="159.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyLong_FromLong (988 samples, 3.33%)</title><rect x="622.8" y="373" width="39.3" height="15.0" fill="rgb(252,222,17)" rx="2" ry="2" />
+<text text-anchor="" x="625.84" y="383.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Pyt..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyLong_AsSsize_t (100 samples, 0.34%)</title><rect x="1144.2" y="373" width="3.9" height="15.0" fill="rgb(213,166,33)" rx="2" ry="2" />
+<text text-anchor="" x="1147.17" y="383.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`binary_iop1 (299 samples, 1.01%)</title><rect x="685.3" y="389" width="11.9" height="15.0" fill="rgb(241,183,53)" rx="2" ry="2" />
+<text text-anchor="" x="688.32" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`pymain_main (29,685 samples, 100.00%)</title><rect x="10.0" y="517" width="1180.0" height="15.0" fill="rgb(237,76,24)" rx="2" ry="2" />
+<text text-anchor="" x="13.00" y="527.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python`pymain_main</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_RichCompare (24 samples, 0.08%)</title><rect x="29.5" y="421" width="0.9" height="15.0" fill="rgb(234,225,3)" rx="2" ry="2" />
+<text text-anchor="" x="32.48" y="431.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyNumber_Add (41 samples, 0.14%)</title><rect x="20.8" y="421" width="1.6" height="15.0" fill="rgb(243,110,31)" rx="2" ry="2" />
+<text text-anchor="" x="23.81" y="431.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyMethodDef_RawFastCallKeywords (209 samples, 0.70%)</title><rect x="991.8" y="373" width="8.3" height="15.0" fill="rgb(216,6,30)" rx="2" ry="2" />
+<text text-anchor="" x="994.80" y="383.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`long_dealloc (50 samples, 0.17%)</title><rect x="1069.8" y="389" width="2.0" height="15.0" fill="rgb(251,226,22)" rx="2" ry="2" />
+<text text-anchor="" x="1072.79" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`list_item (15 samples, 0.05%)</title><rect x="1183.7" y="421" width="0.6" height="15.0" fill="rgb(252,8,13)" rx="2" ry="2" />
+<text text-anchor="" x="1186.68" y="431.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`insertdict (2,618 samples, 8.82%)</title><rect x="1009.0" y="405" width="104.0" height="15.0" fill="rgb(245,119,1)" rx="2" ry="2" />
+<text text-anchor="" x="1011.98" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python`inser..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyObject_Malloc (8 samples, 0.03%)</title><rect x="961.9" y="341" width="0.3" height="15.0" fill="rgb(239,165,37)" rx="2" ry="2" />
+<text text-anchor="" x="964.87" y="351.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyLong_FromSsize_t (5 samples, 0.02%)</title><rect x="991.6" y="373" width="0.2" height="15.0" fill="rgb(254,100,31)" rx="2" ry="2" />
+<text text-anchor="" x="994.60" y="383.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_Str (5 samples, 0.02%)</title><rect x="999.2" y="325" width="0.2" height="15.0" fill="rgb(211,227,21)" rx="2" ry="2" />
+<text text-anchor="" x="1002.24" y="335.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyMethodDef_RawFastCallDict (3 samples, 0.01%)</title><rect x="999.7" y="53" width="0.1" height="15.0" fill="rgb(245,188,19)" rx="2" ry="2" />
+<text text-anchor="" x="1002.67" y="63.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`object_vacall (3 samples, 0.01%)</title><rect x="999.1" y="309" width="0.1" height="15.0" fill="rgb(221,53,0)" rx="2" ry="2" />
+<text text-anchor="" x="1002.12" y="319.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyObject_Malloc (445 samples, 1.50%)</title><rect x="641.5" y="341" width="17.7" height="15.0" fill="rgb(229,121,8)" rx="2" ry="2" />
+<text text-anchor="" x="644.48" y="351.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`pymalloc_alloc (342 samples, 1.15%)</title><rect x="947.2" y="309" width="13.6" height="15.0" fill="rgb(230,205,40)" rx="2" ry="2" />
+<text text-anchor="" x="950.16" y="319.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyNumber_InPlaceAdd (3,527 samples, 11.88%)</title><rect x="673.5" y="405" width="140.2" height="15.0" fill="rgb(219,11,52)" rx="2" ry="2" />
+<text text-anchor="" x="676.52" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python`PyNumber_I..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyNumber_Index (32 samples, 0.11%)</title><rect x="1152.7" y="389" width="1.3" height="15.0" fill="rgb(219,222,11)" rx="2" ry="2" />
+<text text-anchor="" x="1155.71" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyObject_Malloc (54 samples, 0.18%)</title><rect x="995.6" y="325" width="2.2" height="15.0" fill="rgb(219,6,44)" rx="2" ry="2" />
+<text text-anchor="" x="998.62" y="335.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyCFunction_FastCallDict (12 samples, 0.04%)</title><rect x="999.6" y="277" width="0.4" height="15.0" fill="rgb(208,69,38)" rx="2" ry="2" />
+<text text-anchor="" x="1002.55" y="287.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyErr_Clear (4 samples, 0.01%)</title><rect x="449.2" y="389" width="0.1" height="15.0" fill="rgb(215,93,4)" rx="2" ry="2" />
+<text text-anchor="" x="452.17" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyNumber_AsSsize_t (29 samples, 0.10%)</title><rect x="671.4" y="405" width="1.2" height="15.0" fill="rgb(219,173,21)" rx="2" ry="2" />
+<text text-anchor="" x="674.41" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_CallMethodObjArgs (8 samples, 0.03%)</title><rect x="999.6" y="229" width="0.3" height="15.0" fill="rgb(225,50,16)" rx="2" ry="2" />
+<text text-anchor="" x="1002.55" y="239.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyRun_SimpleFileExFlags (29,685 samples, 100.00%)</title><rect x="10.0" y="501" width="1180.0" height="15.0" fill="rgb(250,13,52)" rx="2" ry="2" />
+<text text-anchor="" x="13.00" y="511.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python`PyRun_SimpleFileExFlags</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`app1 (5 samples, 0.02%)</title><rect x="1003.6" y="357" width="0.2" height="15.0" fill="rgb(229,4,43)" rx="2" ry="2" />
+<text text-anchor="" x="1006.65" y="367.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_Malloc (49 samples, 0.17%)</title><rect x="729.6" y="357" width="2.0" height="15.0" fill="rgb(235,84,0)" rx="2" ry="2" />
+<text text-anchor="" x="732.65" y="367.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`pymalloc_alloc (39 samples, 0.13%)</title><rect x="659.2" y="341" width="1.5" height="15.0" fill="rgb(238,132,46)" rx="2" ry="2" />
+<text text-anchor="" x="662.17" y="351.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyLong_New (697 samples, 2.35%)</title><rect x="633.0" y="357" width="27.7" height="15.0" fill="rgb(233,115,14)" rx="2" ry="2" />
+<text text-anchor="" x="636.01" y="367.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >P..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`pymalloc_alloc (28 samples, 0.09%)</title><rect x="960.8" y="325" width="1.1" height="15.0" fill="rgb(215,87,11)" rx="2" ry="2" />
+<text text-anchor="" x="963.76" y="335.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyMethodDef_RawFastCallKeywords (132 samples, 0.44%)</title><rect x="1001.5" y="373" width="5.2" height="15.0" fill="rgb(215,66,21)" rx="2" ry="2" />
+<text text-anchor="" x="1004.50" y="383.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyType_IsSubtype (7 samples, 0.02%)</title><rect x="1001.2" y="373" width="0.3" height="15.0" fill="rgb(235,167,39)" rx="2" ry="2" />
+<text text-anchor="" x="1004.22" y="383.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyLong_New (15 samples, 0.05%)</title><rect x="662.1" y="373" width="0.6" height="15.0" fill="rgb(212,42,50)" rx="2" ry="2" />
+<text text-anchor="" x="665.11" y="383.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`builtin_print (24 samples, 0.08%)</title><rect x="999.1" y="357" width="1.0" height="15.0" fill="rgb(210,41,45)" rx="2" ry="2" />
+<text text-anchor="" x="1002.12" y="367.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_GetItem (236 samples, 0.80%)</title><rect x="817.8" y="405" width="9.4" height="15.0" fill="rgb(218,229,39)" rx="2" ry="2" />
+<text text-anchor="" x="820.81" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_Malloc (103 samples, 0.35%)</title><rect x="745.9" y="341" width="4.1" height="15.0" fill="rgb(213,221,49)" rx="2" ry="2" />
+<text text-anchor="" x="748.91" y="351.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_Size (20 samples, 0.07%)</title><rect x="998.0" y="357" width="0.8" height="15.0" fill="rgb(238,166,25)" rx="2" ry="2" />
+<text text-anchor="" x="1001.00" y="367.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`pymalloc_alloc (50 samples, 0.17%)</title><rect x="995.8" y="309" width="2.0" height="15.0" fill="rgb(234,89,16)" rx="2" ry="2" />
+<text text-anchor="" x="998.78" y="319.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyRun_FileExFlags (29,685 samples, 100.00%)</title><rect x="10.0" y="485" width="1180.0" height="15.0" fill="rgb(238,96,26)" rx="2" ry="2" />
+<text text-anchor="" x="13.00" y="495.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python`PyRun_FileExFlags</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_Free (103 samples, 0.35%)</title><rect x="813.7" y="405" width="4.1" height="15.0" fill="rgb(253,66,53)" rx="2" ry="2" />
+<text text-anchor="" x="816.72" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_bufferedwriter_flush_unlocked (7 samples, 0.02%)</title><rect x="999.6" y="133" width="0.3" height="15.0" fill="rgb(247,5,47)" rx="2" ry="2" />
+<text text-anchor="" x="1002.59" y="143.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_CallFunctionObjArgs (12 samples, 0.04%)</title><rect x="999.6" y="309" width="0.4" height="15.0" fill="rgb(218,94,20)" rx="2" ry="2" />
+<text text-anchor="" x="1002.55" y="319.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>libdyld.dylib`start (29,685 samples, 100.00%)</title><rect x="10.0" y="549" width="1180.0" height="15.0" fill="rgb(219,130,18)" rx="2" ry="2" />
+<text text-anchor="" x="13.00" y="559.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >libdyld.dylib`start</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`long_div (24 samples, 0.08%)</title><rect x="983.5" y="389" width="0.9" height="15.0" fill="rgb(232,64,26)" rx="2" ry="2" />
+<text text-anchor="" x="986.50" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyCFunction_FastCallDict (3 samples, 0.01%)</title><rect x="999.7" y="69" width="0.1" height="15.0" fill="rgb(253,22,5)" rx="2" ry="2" />
+<text text-anchor="" x="1002.67" y="79.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyMethodDef_RawFastCallDict (7 samples, 0.02%)</title><rect x="999.6" y="181" width="0.3" height="15.0" fill="rgb(253,204,5)" rx="2" ry="2" />
+<text text-anchor="" x="1002.59" y="191.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`binary_op1 (2,513 samples, 8.47%)</title><rect x="697.2" y="389" width="99.9" height="15.0" fill="rgb(241,145,28)" rx="2" ry="2" />
+<text text-anchor="" x="700.21" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python`binar..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyDict_SetItem (379 samples, 1.28%)</title><rect x="593.1" y="405" width="15.1" height="15.0" fill="rgb(252,213,4)" rx="2" ry="2" />
+<text text-anchor="" x="596.10" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyNumber_InPlaceAdd (77 samples, 0.26%)</title><rect x="23.3" y="421" width="3.1" height="15.0" fill="rgb(250,65,16)" rx="2" ry="2" />
+<text text-anchor="" x="26.32" y="431.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyLong_FromLong (80 samples, 0.27%)</title><rect x="682.1" y="389" width="3.2" height="15.0" fill="rgb(248,119,9)" rx="2" ry="2" />
+<text text-anchor="" x="685.14" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyFile_WriteObject (13 samples, 0.04%)</title><rect x="999.5" y="325" width="0.5" height="15.0" fill="rgb(239,203,0)" rx="2" ry="2" />
+<text text-anchor="" x="1002.51" y="335.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`long_richcompare (587 samples, 1.98%)</title><rect x="844.6" y="389" width="23.4" height="15.0" fill="rgb(240,58,47)" rx="2" ry="2" />
+<text text-anchor="" x="847.65" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >P..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyNumber_Add (1,576 samples, 5.31%)</title><rect x="608.8" y="405" width="62.6" height="15.0" fill="rgb(243,71,17)" rx="2" ry="2" />
+<text text-anchor="" x="611.77" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyNumber_FloorDivide (22 samples, 0.07%)</title><rect x="22.4" y="421" width="0.9" height="15.0" fill="rgb(211,30,51)" rx="2" ry="2" />
+<text text-anchor="" x="25.44" y="431.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`builtin_len (3 samples, 0.01%)</title><rect x="1000.1" y="373" width="0.1" height="15.0" fill="rgb(221,222,0)" rx="2" ry="2" />
+<text text-anchor="" x="1003.11" y="383.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyFile_WriteString (14 samples, 0.05%)</title><rect x="999.5" y="341" width="0.6" height="15.0" fill="rgb(206,144,15)" rx="2" ry="2" />
+<text text-anchor="" x="1002.51" y="351.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_io_TextIOWrapper_write (12 samples, 0.04%)</title><rect x="999.6" y="245" width="0.4" height="15.0" fill="rgb(238,188,22)" rx="2" ry="2" />
+<text text-anchor="" x="1002.55" y="255.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyLong_FromLong (2,080 samples, 7.01%)</title><rect x="713.4" y="373" width="82.7" height="15.0" fill="rgb(236,68,47)" rx="2" ry="2" />
+<text text-anchor="" x="716.39" y="383.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python`Py..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`long_add (219 samples, 0.74%)</title><rect x="662.7" y="389" width="8.7" height="15.0" fill="rgb(220,210,38)" rx="2" ry="2" />
+<text text-anchor="" x="665.71" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_textiowrapper_writeflush (4 samples, 0.01%)</title><rect x="999.9" y="229" width="0.1" height="15.0" fill="rgb(239,159,26)" rx="2" ry="2" />
+<text text-anchor="" x="1002.87" y="239.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_CallMethodObjArgs (4 samples, 0.01%)</title><rect x="999.6" y="101" width="0.2" height="15.0" fill="rgb(207,16,15)" rx="2" ry="2" />
+<text text-anchor="" x="1002.63" y="111.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyFile_WriteObject (10 samples, 0.03%)</title><rect x="999.1" y="341" width="0.4" height="15.0" fill="rgb(212,177,31)" rx="2" ry="2" />
+<text text-anchor="" x="1002.12" y="351.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_Malloc (44 samples, 0.15%)</title><rect x="639.7" y="341" width="1.8" height="15.0" fill="rgb(212,134,11)" rx="2" ry="2" />
+<text text-anchor="" x="642.73" y="351.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyObject_Malloc (26 samples, 0.09%)</title><rect x="795.0" y="357" width="1.1" height="15.0" fill="rgb(244,33,25)" rx="2" ry="2" />
+<text text-anchor="" x="798.04" y="367.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_io_FileIO_write (3 samples, 0.01%)</title><rect x="999.7" y="37" width="0.1" height="15.0" fill="rgb(212,112,47)" rx="2" ry="2" />
+<text text-anchor="" x="1002.67" y="47.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`lookdict_unicode_nodummy (415 samples, 1.40%)</title><rect x="1164.3" y="405" width="16.5" height="15.0" fill="rgb(243,106,48)" rx="2" ry="2" />
+<text text-anchor="" x="1167.32" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`long_dealloc (130 samples, 0.44%)</title><rect x="1184.8" y="421" width="5.2" height="15.0" fill="rgb(249,73,34)" rx="2" ry="2" />
+<text text-anchor="" x="1187.83" y="431.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`list_resize (24 samples, 0.08%)</title><rect x="1005.8" y="325" width="0.9" height="15.0" fill="rgb(235,190,34)" rx="2" ry="2" />
+<text text-anchor="" x="1008.80" y="335.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`pymalloc_alloc (808 samples, 2.72%)</title><rect x="760.0" y="325" width="32.1" height="15.0" fill="rgb(249,210,13)" rx="2" ry="2" />
+<text text-anchor="" x="762.98" y="335.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Py..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`pymalloc_alloc (4 samples, 0.01%)</title><rect x="997.8" y="325" width="0.1" height="15.0" fill="rgb(226,136,53)" rx="2" ry="2" />
+<text text-anchor="" x="1000.77" y="335.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyObject_Malloc (1,059 samples, 3.57%)</title><rect x="750.0" y="341" width="42.1" height="15.0" fill="rgb(206,121,31)" rx="2" ry="2" />
+<text text-anchor="" x="753.00" y="351.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Pyt..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`binary_op1 (1,216 samples, 4.10%)</title><rect x="614.4" y="389" width="48.3" height="15.0" fill="rgb(241,11,34)" rx="2" ry="2" />
+<text text-anchor="" x="617.37" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Pyth..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyErr_Restore (9 samples, 0.03%)</title><rect x="608.4" y="405" width="0.4" height="15.0" fill="rgb(252,29,37)" rx="2" ry="2" />
+<text text-anchor="" x="611.41" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyObject_GetDictPtr (6 samples, 0.02%)</title><rect x="895.7" y="389" width="0.3" height="15.0" fill="rgb(225,155,17)" rx="2" ry="2" />
+<text text-anchor="" x="898.73" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`list_subscript (631 samples, 2.13%)</title><rect x="1128.9" y="405" width="25.1" height="15.0" fill="rgb(234,49,38)" rx="2" ry="2" />
+<text text-anchor="" x="1131.90" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >P..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`lookdict_unicode_nodummy (1,038 samples, 3.50%)</title><rect x="1071.8" y="389" width="41.2" height="15.0" fill="rgb(221,27,42)" rx="2" ry="2" />
+<text text-anchor="" x="1074.78" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Pyt..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_GetItem (26 samples, 0.09%)</title><rect x="28.4" y="421" width="1.1" height="15.0" fill="rgb(238,134,31)" rx="2" ry="2" />
+<text text-anchor="" x="31.44" y="431.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyLong_FromLong (37 samples, 0.12%)</title><rect x="612.9" y="389" width="1.5" height="15.0" fill="rgb(226,101,18)" rx="2" ry="2" />
+<text text-anchor="" x="615.90" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`buffered_flush (7 samples, 0.02%)</title><rect x="999.6" y="165" width="0.3" height="15.0" fill="rgb(241,18,41)" rx="2" ry="2" />
+<text text-anchor="" x="1002.59" y="175.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`list_subscript (14 samples, 0.05%)</title><rect x="1184.3" y="421" width="0.5" height="15.0" fill="rgb(238,107,40)" rx="2" ry="2" />
+<text text-anchor="" x="1187.28" y="431.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`call_function (617 samples, 2.08%)</title><rect x="984.4" y="405" width="24.6" height="15.0" fill="rgb(242,138,37)" rx="2" ry="2" />
+<text text-anchor="" x="987.45" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >P..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`fast_floor_div (20 samples, 0.07%)</title><rect x="918.7" y="373" width="0.8" height="15.0" fill="rgb(243,101,53)" rx="2" ry="2" />
+<text text-anchor="" x="921.70" y="383.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyObject_Malloc (35 samples, 0.12%)</title><rect x="660.7" y="357" width="1.4" height="15.0" fill="rgb(254,80,46)" rx="2" ry="2" />
+<text text-anchor="" x="663.72" y="367.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_Free (52 samples, 0.18%)</title><rect x="26.4" y="421" width="2.0" height="15.0" fill="rgb(239,82,42)" rx="2" ry="2" />
+<text text-anchor="" x="29.38" y="431.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyLong_New (80 samples, 0.27%)</title><rect x="994.7" y="341" width="3.2" height="15.0" fill="rgb(205,189,5)" rx="2" ry="2" />
+<text text-anchor="" x="997.74" y="351.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_Malloc (68 samples, 0.23%)</title><rect x="940.2" y="325" width="2.7" height="15.0" fill="rgb(212,123,23)" rx="2" ry="2" />
+<text text-anchor="" x="943.17" y="335.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`call_function (3 samples, 0.01%)</title><rect x="1182.1" y="421" width="0.1" height="15.0" fill="rgb(244,42,2)" rx="2" ry="2" />
+<text text-anchor="" x="1185.09" y="431.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyObject_Free (382 samples, 1.29%)</title><rect x="1054.6" y="389" width="15.2" height="15.0" fill="rgb(211,196,39)" rx="2" ry="2" />
+<text text-anchor="" x="1057.61" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_Malloc (30 samples, 0.10%)</title><rect x="631.8" y="357" width="1.2" height="15.0" fill="rgb(207,161,7)" rx="2" ry="2" />
+<text text-anchor="" x="634.82" y="367.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyLong_AsSsize_t (20 samples, 0.07%)</title><rect x="1136.7" y="389" width="0.8" height="15.0" fill="rgb(232,155,21)" rx="2" ry="2" />
+<text text-anchor="" x="1139.73" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`binary_op1 (59 samples, 0.20%)</title><rect x="905.8" y="405" width="2.3" height="15.0" fill="rgb(247,12,41)" rx="2" ry="2" />
+<text text-anchor="" x="908.78" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyLong_New (30 samples, 0.10%)</title><rect x="962.2" y="357" width="1.2" height="15.0" fill="rgb(253,161,50)" rx="2" ry="2" />
+<text text-anchor="" x="965.19" y="367.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`binary_op (161 samples, 0.54%)</title><rect x="899.4" y="405" width="6.4" height="15.0" fill="rgb(254,149,34)" rx="2" ry="2" />
+<text text-anchor="" x="902.38" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyLong_FromSsize_t (115 samples, 0.39%)</title><rect x="993.4" y="357" width="4.6" height="15.0" fill="rgb(239,57,54)" rx="2" ry="2" />
+<text text-anchor="" x="996.43" y="367.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_Py_dg_dtoa (3 samples, 0.01%)</title><rect x="999.3" y="277" width="0.1" height="15.0" fill="rgb(222,163,12)" rx="2" ry="2" />
+<text text-anchor="" x="1002.28" y="287.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyObject_Free (26 samples, 0.09%)</title><rect x="1180.9" y="421" width="1.0" height="15.0" fill="rgb(226,2,0)" rx="2" ry="2" />
+<text text-anchor="" x="1183.86" y="431.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyCFunction_FastCallKeywords (233 samples, 0.78%)</title><rect x="991.0" y="389" width="9.3" height="15.0" fill="rgb(230,210,30)" rx="2" ry="2" />
+<text text-anchor="" x="994.01" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_CallMethodObjArgs (3 samples, 0.01%)</title><rect x="999.9" y="213" width="0.1" height="15.0" fill="rgb(217,166,29)" rx="2" ry="2" />
+<text text-anchor="" x="1002.87" y="223.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyEval_EvalFrameDefault (28,941 samples, 97.49%)</title><rect x="30.4" y="421" width="1150.5" height="15.0" fill="rgb(218,228,15)" rx="2" ry="2" />
+<text text-anchor="" x="33.43" y="431.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python`_PyEval_EvalFrameDefault</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_CallFunctionObjArgs (3 samples, 0.01%)</title><rect x="999.1" y="325" width="0.1" height="15.0" fill="rgb(210,87,36)" rx="2" ry="2" />
+<text text-anchor="" x="1002.12" y="335.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`object_vacall (12 samples, 0.04%)</title><rect x="999.6" y="293" width="0.4" height="15.0" fill="rgb(242,141,12)" rx="2" ry="2" />
+<text text-anchor="" x="1002.55" y="303.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`float_repr (4 samples, 0.01%)</title><rect x="999.2" y="309" width="0.2" height="15.0" fill="rgb(213,226,35)" rx="2" ry="2" />
+<text text-anchor="" x="1002.24" y="319.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_Malloc (29 samples, 0.10%)</title><rect x="932.7" y="341" width="1.1" height="15.0" fill="rgb(233,171,19)" rx="2" ry="2" />
+<text text-anchor="" x="935.65" y="351.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyErr_Clear (6 samples, 0.02%)</title><rect x="608.2" y="405" width="0.2" height="15.0" fill="rgb(215,77,28)" rx="2" ry="2" />
+<text text-anchor="" x="611.17" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyNumber_Index (115 samples, 0.39%)</title><rect x="1148.1" y="373" width="4.6" height="15.0" fill="rgb(239,138,46)" rx="2" ry="2" />
+<text text-anchor="" x="1151.14" y="383.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`binary_op (5 samples, 0.02%)</title><rect x="1181.9" y="421" width="0.2" height="15.0" fill="rgb(207,3,4)" rx="2" ry="2" />
+<text text-anchor="" x="1184.89" y="431.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`pymalloc_alloc (366 samples, 1.23%)</title><rect x="644.6" y="325" width="14.6" height="15.0" fill="rgb(228,213,31)" rx="2" ry="2" />
+<text text-anchor="" x="647.62" y="335.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`object_vacall (3 samples, 0.01%)</title><rect x="999.7" y="85" width="0.1" height="15.0" fill="rgb(216,133,30)" rx="2" ry="2" />
+<text text-anchor="" x="1002.67" y="95.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_Py_UnixMain (29,685 samples, 100.00%)</title><rect x="10.0" y="533" width="1180.0" height="15.0" fill="rgb(228,96,31)" rx="2" ry="2" />
+<text text-anchor="" x="13.00" y="543.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python`_Py_UnixMain</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyLong_New (706 samples, 2.38%)</title><rect x="933.8" y="341" width="28.1" height="15.0" fill="rgb(224,42,49)" rx="2" ry="2" />
+<text text-anchor="" x="936.81" y="351.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >P..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyErr_Occurred (9 samples, 0.03%)</title><rect x="1008.5" y="373" width="0.4" height="15.0" fill="rgb(249,96,45)" rx="2" ry="2" />
+<text text-anchor="" x="1011.54" y="383.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyLong_New (5 samples, 0.02%)</title><rect x="998.8" y="357" width="0.2" height="15.0" fill="rgb(251,29,38)" rx="2" ry="2" />
+<text text-anchor="" x="1001.80" y="367.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`long_div (1,610 samples, 5.42%)</title><rect x="919.5" y="373" width="64.0" height="15.0" fill="rgb(241,212,18)" rx="2" ry="2" />
+<text text-anchor="" x="922.50" y="383.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python`..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`app1 (67 samples, 0.23%)</title><rect x="1004.1" y="341" width="2.6" height="15.0" fill="rgb(245,25,41)" rx="2" ry="2" />
+<text text-anchor="" x="1007.09" y="351.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyDict_SetItem (74 samples, 0.25%)</title><rect x="17.9" y="421" width="2.9" height="15.0" fill="rgb(227,166,21)" rx="2" ry="2" />
+<text text-anchor="" x="20.87" y="431.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyOS_double_to_string (4 samples, 0.01%)</title><rect x="999.2" y="293" width="0.2" height="15.0" fill="rgb(219,10,1)" rx="2" ry="2" />
+<text text-anchor="" x="1002.24" y="303.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>all (29,685 samples, 100%)</title><rect x="10.0" y="581" width="1180.0" height="15.0" fill="rgb(206,92,3)" rx="2" ry="2" />
+<text text-anchor="" x="13.00" y="591.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyNumber_AsSsize_t (382 samples, 1.29%)</title><rect x="1137.5" y="389" width="15.2" height="15.0" fill="rgb(245,102,49)" rx="2" ry="2" />
+<text text-anchor="" x="1140.53" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyObject_GetMethod (92 samples, 0.31%)</title><rect x="893.5" y="405" width="3.7" height="15.0" fill="rgb(225,102,20)" rx="2" ry="2" />
+<text text-anchor="" x="896.50" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`binary_iop1 (52 samples, 0.18%)</title><rect x="897.3" y="405" width="2.1" height="15.0" fill="rgb(208,88,19)" rx="2" ry="2" />
+<text text-anchor="" x="900.32" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`run_mod (29,685 samples, 100.00%)</title><rect x="10.0" y="469" width="1180.0" height="15.0" fill="rgb(225,41,12)" rx="2" ry="2" />
+<text text-anchor="" x="13.00" y="479.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python`run_mod</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyDict_GetItem (5,857 samples, 19.73%)</title><rect x="360.3" y="405" width="232.8" height="15.0" fill="rgb(232,142,51)" rx="2" ry="2" />
+<text text-anchor="" x="363.28" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python`PyDict_GetItem</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`lookdict_unicode_nodummy (3,576 samples, 12.05%)</title><rect x="451.0" y="389" width="142.1" height="15.0" fill="rgb(241,29,32)" rx="2" ry="2" />
+<text text-anchor="" x="453.95" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python`lookdict_un..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`binary_op (1,920 samples, 6.47%)</title><rect x="908.1" y="405" width="76.3" height="15.0" fill="rgb(210,151,0)" rx="2" ry="2" />
+<text text-anchor="" x="911.13" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python`b..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`long_dealloc (203 samples, 0.68%)</title><rect x="1154.0" y="405" width="8.1" height="15.0" fill="rgb(223,224,5)" rx="2" ry="2" />
+<text text-anchor="" x="1156.99" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`fast_floor_div (506 samples, 1.70%)</title><rect x="963.4" y="357" width="20.1" height="15.0" fill="rgb(205,133,1)" rx="2" ry="2" />
+<text text-anchor="" x="966.38" y="367.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyErr_Occurred (7 samples, 0.02%)</title><rect x="990.7" y="389" width="0.3" height="15.0" fill="rgb(208,17,27)" rx="2" ry="2" />
+<text text-anchor="" x="993.73" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyLong_New (1,596 samples, 5.38%)</title><rect x="731.6" y="357" width="63.4" height="15.0" fill="rgb(213,100,49)" rx="2" ry="2" />
+<text text-anchor="" x="734.59" y="367.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`long_richcompare (57 samples, 0.19%)</title><rect x="1162.1" y="405" width="2.2" height="15.0" fill="rgb(251,171,28)" rx="2" ry="2" />
+<text text-anchor="" x="1165.06" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyMethodDef_RawFastCallDict (3 samples, 0.01%)</title><rect x="999.1" y="277" width="0.1" height="15.0" fill="rgb(207,113,24)" rx="2" ry="2" />
+<text text-anchor="" x="1002.12" y="287.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyLong_New (26 samples, 0.09%)</title><rect x="796.1" y="373" width="1.0" height="15.0" fill="rgb(210,15,4)" rx="2" ry="2" />
+<text text-anchor="" x="799.07" y="383.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyNumber_FloorDivide (24 samples, 0.08%)</title><rect x="672.6" y="405" width="0.9" height="15.0" fill="rgb(217,49,15)" rx="2" ry="2" />
+<text text-anchor="" x="675.56" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyLong_FromLong (921 samples, 3.10%)</title><rect x="925.6" y="357" width="36.6" height="15.0" fill="rgb(251,193,35)" rx="2" ry="2" />
+<text text-anchor="" x="928.58" y="367.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Pyt..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_Malloc (6 samples, 0.02%)</title><rect x="995.4" y="325" width="0.2" height="15.0" fill="rgb(233,183,4)" rx="2" ry="2" />
+<text text-anchor="" x="998.38" y="335.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyCFunction_FastCallDict (3 samples, 0.01%)</title><rect x="999.1" y="293" width="0.1" height="15.0" fill="rgb(242,223,29)" rx="2" ry="2" />
+<text text-anchor="" x="1002.12" y="303.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyLong_FromLong (21 samples, 0.07%)</title><rect x="917.9" y="373" width="0.8" height="15.0" fill="rgb(234,61,51)" rx="2" ry="2" />
+<text text-anchor="" x="920.87" y="383.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`long_compare (258 samples, 0.87%)</title><rect x="857.7" y="373" width="10.3" height="15.0" fill="rgb(234,150,52)" rx="2" ry="2" />
+<text text-anchor="" x="860.72" y="383.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`binary_op1 (1,896 samples, 6.39%)</title><rect x="908.1" y="389" width="75.4" height="15.0" fill="rgb(222,74,27)" rx="2" ry="2" />
+<text text-anchor="" x="911.13" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python`b..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyType_Lookup (29 samples, 0.10%)</title><rect x="896.0" y="389" width="1.1" height="15.0" fill="rgb(248,160,38)" rx="2" ry="2" />
+<text text-anchor="" x="898.96" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`list_item (399 samples, 1.34%)</title><rect x="1113.0" y="405" width="15.9" height="15.0" fill="rgb(216,63,30)" rx="2" ry="2" />
+<text text-anchor="" x="1116.04" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyObject_Malloc (450 samples, 1.52%)</title><rect x="942.9" y="325" width="17.9" height="15.0" fill="rgb(232,46,49)" rx="2" ry="2" />
+<text text-anchor="" x="945.87" y="335.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyEval_EvalCodeWithName (29,685 samples, 100.00%)</title><rect x="10.0" y="437" width="1180.0" height="15.0" fill="rgb(217,121,5)" rx="2" ry="2" />
+<text text-anchor="" x="13.00" y="447.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Python`_PyEval_EvalCodeWithName</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`insertdict (37 samples, 0.12%)</title><rect x="1182.2" y="421" width="1.5" height="15.0" fill="rgb(228,71,12)" rx="2" ry="2" />
+<text text-anchor="" x="1185.21" y="431.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_Py_CheckFunctionResult (35 samples, 0.12%)</title><rect x="1007.5" y="389" width="1.4" height="15.0" fill="rgb(241,37,51)" rx="2" ry="2" />
+<text text-anchor="" x="1010.50" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`pymalloc_alloc (74 samples, 0.25%)</title><rect x="792.1" y="341" width="2.9" height="15.0" fill="rgb(214,50,30)" rx="2" ry="2" />
+<text text-anchor="" x="795.10" y="351.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`_PyType_Lookup (4 samples, 0.01%)</title><rect x="897.2" y="405" width="0.1" height="15.0" fill="rgb(224,206,44)" rx="2" ry="2" />
+<text text-anchor="" x="900.16" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`PyObject_RichCompare (1,026 samples, 3.46%)</title><rect x="827.2" y="405" width="40.8" height="15.0" fill="rgb(232,192,34)" rx="2" ry="2" />
+<text text-anchor="" x="830.20" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Pyt..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`long_add (418 samples, 1.41%)</title><rect x="797.1" y="389" width="16.6" height="15.0" fill="rgb(239,197,24)" rx="2" ry="2" />
+<text text-anchor="" x="800.10" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Python`long_compare (31 samples, 0.10%)</title><rect x="843.4" y="389" width="1.2" height="15.0" fill="rgb(221,119,41)" rx="2" ry="2" />
+<text text-anchor="" x="846.41" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+</svg>

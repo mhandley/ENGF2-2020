@@ -1,0 +1,1572 @@
+welcome back everyone!
+
+if you recall last time we looked at how you use python lists and
+today i'm going to go into that in a bit more detail but first of all
+we'll just do a quick recap of how you actually use the python lists
+
+so i've already defined this list days with the work days of the
+working week in there we can print it out the the first thing we can
+do is we can access the elements of this by their index so we can it's
+the second day of the week by printing out days one like that
+
+the second thing we can do is we can add things to the end of the list
+days that append say saturday and dates are append sunday and as you
+can see we now have a weekend in our list
+
+we can also remove elements from the list last time we used the del
+operation to do it but there's another operation called pop which does
+pretty much the same thing and we call days.pop it will pop the first
+element from the list so in this case it will remove monday from our
+list and monday has disappeared.
+
+We can also call pop without a parameter and that will remove the last
+element of the list.
+
+so there we go we can print out the individual elements of the list we
+can append to the end of the list we can remove things from the
+beginning of the list and we can remove things from the end of the
+list. Those are sort of the main list operations we need to be able to
+perform
+
+now what i want to look at today is not how you use lists but how a
+python list is actually implemented and how do they perform. Those are
+the two questions we'd like to try and figure out.
+
+okay so what kind of experiment we're
+going to do well
+what we're going to do is to append to
+the end of a list making the list longer
+and longer and longer and longer
+and what we want to see is does it take
+longer to append to the end of a long
+list than it takes to end to
+append to the end of a short list
+so here's the test code we're going to
+use to do this
+first of all we're going to initialize
+our list to be empty we're going to
+initialize our counter to be
+0 and we're going to record what the
+time is at the start of the list
+and then we're going to run a while loop
+here i'm going to run this wired up
+until count gets to 10
+000 and each time through the loop we'll
+increase count by one
+so that means that we're going to run
+this chunk of code here
+10 million times now what we're going to
+do we're going to append
+the current value of the counter to the
+end of the list so that this will get
+longer and longer and longer
+and so we can see what progress we're
+making
+every 10 000 items we're going to record
+what the current time is
+and print out the elapsed time and how
+far we've got through the list
+so that should let us see whether it
+takes the same amount of time to add to
+a long list
+as x will add to a short list okay
+so let's just run this
+there we go and what we can see is that
+it's running and after about three
+seconds it's finished adding
+all 10 million items to the end of our
+list
+now that doesn't quite answer our
+question we're going to actually need to
+graph this to see whether
+the time is constant so we're going to
+capture this i'm going to use that
+redirection operator to
+redirect the data from run nut to a file
+and we run it again now we can't see the
+output because the output is being
+captured into this file called
+append.out
+okay it's run now we're going to use is
+gnuplot to plot the
+data that's in there and we will
+have a look at what we get
+okay and so
+here is the graph that we get so on the
+on the x-axis here we have the
+length of the list in millions of items
+and on the y-axis we have how long it
+took from the start to get to that point
+and this is pretty nearly a straight
+line
+and so what we can see from this test is
+that adding to the end of
+a long list takes exactly the same
+amount of time as adding to the end of a
+short list
+so it's really good to know it means
+that we can add to lists doesn't matter
+how big they are
+and the format is still going to be
+pretty good and we got through 10
+million items in three seconds
+so that's pretty good
+now what are we going to do next how
+about we test deleting from the list
+okay so here's our code for deleting
+from the list
+first of all we've actually got to
+create a list so we initialize our list
+to zero and count it to zero
+and we'll do what we did last time we'll
+actually append to the end of the list
+until we've got 10 million items we know
+that's pretty fast
+so that's good now
+only then we're going to record the
+start time and we're going to run
+a second while loop again going to go
+through
+10 million times we're going to call
+list.pop 0 to delete the first item from
+the list
+and every 10 000 items as we did before
+we'll print out our progress
+so pretty much the same as we did before
+we'll create our list but then we'll
+only record when we're deleting from it
+and we'll print out every 10 000 items
+and see how far we get
+okay so let's run this
+okay it's running and well that's when
+it finished creating the list
+and it's not doing anything else
+that should be printing out every 10 000
+items and we're not getting anything
+that's curious okay so
+what could be going wrong well maybe
+we've got a bug in our code
+but maybe our code is just really slow
+why don't we print out every 100 items
+instead let's try that
+okay let's finish cranking the list and
+okay so we're getting maybe
+a hundred items per second deleted
+whereas it took us only three seconds to
+add
+10 million items
+that's a bit slow maybe we should
+investigate a little bit further
+okay so this one's going to require a
+slightly more complicated test
+so here's what i've come up with
+what we're going to do is we're going to
+create lists of lots of different
+lengths
+so this for loop here is going to create
+lists
+starting at length thousand increasing
+by ten thousand each time
+all the way up to five hundred thousand
+so we're gonna have lists of increasing
+length
+each time through the for loop we're
+going to append
+to our list to make sure that it is the
+correct length we're going to add the
+number of magic number 42 to the end of
+our list
+and so that means that
+what we're going to do now is try
+deleting from the list now we're only
+going to try and deleting 100 items from
+the list because we know that deletion
+is pretty slow
+so we're going to pop from the start of
+the list just a hundred items
+and we're going to time how long that
+takes so what we'll get is
+lists of increasing size and each size
+we're going to try updating 100 items
+i'm going to time how long that takes
+that's the idea here okay so what's that
+going to do
+so let's run that and
+send it to the output and we'll plot
+the results of that
+now this graph's a little bit more noisy
+than the other graph
+on here we've got these kind of little
+spikes
+like this
+now these little spikes aren't really a
+representative of how long python takes
+to actually do something
+it's just because when the program was
+running in the middle of that occasion
+my operating system decided to go off
+and do something to do with recording
+this video or things like that
+so there's little timing glitches in
+there but
+generally speaking the trend is fairly
+clear you've got a pretty much
+a straight line as the length of the
+list increases
+so what this is showing is that the time
+it takes to delete the first hundred
+items of the list
+is pretty much nearly exactly
+proportional to the length of the list
+and so maybe we're starting to get some
+kind of idea of what's going on
+with how python implements lists but i
+think we've still got a few more
+experiments to run
+okay so we've tried deleting from the
+beginning of the list and we know that's
+slow we haven't tried dating yet from
+the end of the list maybe that's faster
+and we could also try dating from the
+middle of the list we can compare all
+three and see how that works
+okay so let's try that
+whereas before we deleted the first item
+of the list
+how about we delete the last item of the
+list
+and we can comment that out so it
+doesn't get run
+okay let's try and see how that works
+okay that runs now let's record it
+that's deleting from the end of the list
+isn't it
+so we'll record it there okay
+we'll also try deleting from the middle
+of the list
+comment that one out and for this we
+want to
+do length of the list divided by 2. okay
+and that should delete the middle
+hundred items of the list
+and we can plot these
+and we'll see how we get on
+so what have we got on this plot still
+got on the x-axis how long the list is
+and on the y-axis we've still got how
+long it takes to delete a hundred items
+now the red line is showing what happens
+when
+we delete from the
+start of the list the orange line is
+what's showing what's happening
+from the middle of the list and the blue
+line down the bottom here is showing
+what's happened when we delete
+from the end of the list and so what we
+can see
+is that it's taking roughly twice as
+long
+to delete from the start of the list as
+it is taken to delete from the
+middle of the list and deleting from the
+end of the list is really really cheap
+so this should be giving us yet more
+clues as to perhaps how python is
+implementing its lists
+but there's still one more thing i want
+to try out
+now the last thing i want to do is to
+see how long it takes to access
+the items of the list is it quicker to
+access
+items at the beginning of the list or
+the middle or the end
+well i guess that will depend on how
+it's implemented
+so here's a little piece of test code
+that
+does pretty much what the deletion one
+does except instead of deleting
+what it does is a little while loop and
+it will
+add to the variable x the the contents
+of the list at a particular position
+and so the first time around i'm going
+to test the first thousand elements of
+the list
+and then i'm also going to test the
+middle thousand elements of the list
+and i'm also going to test the last
+thousand elements of the list and
+we'll see how these different versions
+perform now i'm going to cut to the
+chase this time
+rather than have to actually run all
+these three so here are the results
+so the first thing that's sort of
+obvious from this graph
+is it's a little bit spiky you've got
+these kind of
+spikes appearing all over the graph but
+those as i said before i adjust the fact
+that my computer is doing more than one
+thing at once and so they're not the
+actual underlying trend they're not
+really
+what it takes python to perform the the
+main takeaway from this
+is that these graphs all three of them
+are pretty flat
+so it doesn't matter whether we're
+accessing the first thousand items the
+middle thousand items or the end
+thousand items of the list
+all of them it takes roughly the same
+time if the list is small
+or if the list is big now
+it's also noticeable that it takes a
+little bit more time
+to access things that are at the uh at
+the be
+at the middle of the end of the list
+than it takes at the start of the list
+and i think this is actually just due to
+the way the cpu processor cache works
+it's nothing fundamental to the way the
+python algorithm works
+and finally the other thing to look at
+here is what these numbers actually are
+it's really quick to access a thousand
+items of a list no matter whether it's
+at the start the middle or the end this
+is very very fast
+so the actual slight difference between
+the start middle and end i don't think
+is really the main story here
+it's that it doesn't matter where in the
+list you access it doesn't matter
+how long the list is basically accessing
+items from a list
+is a really quick operation
+okay so now we've actually measured how
+python lists perform
+we can start to actually come up with a
+proper hypothesis for how they might be
+implemented so
+what do we see well we see that it
+appears that python is laying out
+his lists consecutively in memory
+and so element zero is at the start and
+then the list
+increments through memory and it
+eventually ends up with element
+n at the end there and this is
+consistent with what we see
+when we try to index into the list so
+suppose we want to read
+element number 27 here in the middle
+well all we need to know is how large an
+element is and we can multiply that by
+27 and go straight to the element we
+want and be able to access it
+and that gives us very quick operation
+to actually be able to access an element
+it doesn't matter where in the list it
+is we can go straight to it and we can
+access
+it now this theory is also consistent
+with what happened when we tried to
+append to lists so suppose we've got a
+shortish list here so long as there's
+some space after it we can just
+append new elements onto the end of the
+list we don't have to do anything to the
+existing elements of the list
+so appending to the end of a list it
+takes a constant amount of time
+assuming there's enough space above the
+list to be able to add into
+occasionally python might need to copy a
+list from one place to another in memory
+but
+most of the time it doesn't need to do
+that so most of the time appending to
+the end of the list is
+very cheap what else did we see well we
+saw that when we deleted from a list it
+was pretty expensive
+so here's a list
+suppose we want to delete the first
+element
+well if we want to preserve this
+property
+at the top here which gives us the
+ability to index into the list
+then the only thing we can do to delete
+is to copy everything down through
+memory a bit
+so instead of being up there we move
+each element one by one
+have to copy it down and that's
+consistent with what we saw
+when we observed that the price of
+deleting from the beginning of a list
+was proportional to the length of the
+list it's also consistent with what we
+saw
+when we tried to delete from the middle
+of a list we want to delete that item
+from the middle of the list
+we don't need to do anything with the
+items at the bottom here
+they just stay where they are what we do
+need to do is to copy the ones that are
+above
+the one we want to delete and that's
+what we saw when we deleted from the
+middle of this it was about half the
+price of deleting
+from the beginning of the list
+and then the other thing we saw was that
+if you want to delete say the last item
+of the list
+up there then that's no problem it
+doesn't have
+affect any other item in the list and so
+that's a very cheap operation again
+now we have some kind of a mental model
+of what's actually going on with the
+implementation of python lists
+then we can actually figure out how they
+will perform in different circumstances
+and therefore when we can use them to do
+something that's quick and when we can't
+now at the moment this is just a
+hypothesis we haven't proved
+that python is actually copying these
+items
+now we can do that so that's where we're
+going to go next we're going to actually
+instrument
+python and find out what it's actually
+doing
+so what we really need to do here is to
+profile our code and to find out what's
+going on
+so what's a profiler well a profiler is
+software that analyzes what other
+software is doing
+now there are many different types of
+profilers
+they can measure different types of
+resources uh many different types of
+levels
+well this is what we want to do though
+we want to profile the code to find out
+where python spends all its time
+now there are python program profilers
+but that's not going to help us ask this
+particular question because
+all a python profiler is going to do is
+to tell us
+that when we're deleting from the
+beginning of our list the program is
+spending all its time in pop
+and that's we sort of already know that
+we know that pop is slow when we delete
+from the beginning of a large list
+what we're going to do is to need to
+profile the python interpreter itself to
+find out what's going on within
+python and this is going to take us a
+little bit of a visualization diversion
+now
+visualization is one of the topics of
+this course and so
+what we're going to do is i'm going to
+do some profiling of this code and then
+i'm going to show you one way of
+visualizing
+what the information from the profiler
+is actually telling us
+[Music]
+okay so what am i going to use to
+profile python's interpreter i'm going
+to use
+a program called dtrace now this is kind
+of an advanced topic you don't really
+need to know this stuff at the moment
+but
+a rough summary of what i'm doing is i'm
+using dtrace
+to connect to the running python
+interpreter and d trace is going
+to interrupt the python interpreter a
+thousand times a second
+to find out what python is doing at that
+point what it's going to do is to log
+what's called a stack trace which is
+which function is calling which other
+function
+and it's going to dump the statistics of
+which function is calling which other
+function
+in the stack trace a thousand times a
+second
+um to produce a profile trace and then
+profile traces are actually quite hard
+to interpret so what i've done is to run
+this through some fancy perl scripts
+in order to visualize the data and the
+way we're going to visualize this data
+is known as flame graph
+so here's the flame graph from our
+little test for accessing an item from
+the middle of the list
+now how do you actually read one of
+these flame graphs well
+the first thing to to realize is that
+this axis here
+represents time it's actually the
+percentage of time
+that is spent in a particular function
+so
+if something right goes the whole way
+across the screen then
+it spent 100 of its time in that
+function if it goes halfway across it
+spent 50
+of the time during the running of the
+code in that function in this direction
+here
+these represent function calls so each
+layer is a function that calls the
+the layer above and so forth
+okay so
+let's interact with the graph a little
+bit now we can actually
+mouse over this and so we can see for
+example that
+eval code here calls eval code with name
+which calls eval
+frame default and that one caused quite
+a lot of things it calls
+get item and it calls pi number add
+and it calls pi number in place add and
+so forth
+so you get some idea then of how much of
+the time it's spent
+in each of these particular functions
+now obviously
+in this particular function here add in
+place it didn't actually stay in that
+very long because it spent most of the
+time in
+binary op and above and that spent most
+of its time in the operation above and
+so forth
+we also see some really interesting
+things it's sort of a very tall spike
+here
+now we can click on this and we can kind
+of zoom in and find out what it is
+and if we click here we've discovered
+that that's actually print
+if we zoom in a bit further this is the
+print function
+the print function calls a whole bunch
+of other functions in sequence in order
+to actually display stuff on the screen
+but if i put the mouse over there we see
+down the bottom the the code is only
+spending
+0.08 percent of its time in print so not
+very much
+okay so let's zoom back out
+okay so what we're looking for what
+we're looking for was
+what's happening when we're accessing
+items from our list and
+over here just this small little bit on
+the right hand side
+is list subscript and that's what python
+is doing when it's adding
+when it's accessing an item from the
+middle list it's basically subscripting
+an item
+and we can see that list subscript was
+taking
+2.1 percent of the time of that test so
+really almost all of the time of running
+that test for accessing item in the
+middle of the list
+was not actually spent getting the items
+from the middle of this it was been
+doing all the other things like the
+addition we did and things like that
+okay so that's accessing the item from
+the middle of the list now
+this is the flame graph for popping an
+item from the back of the list
+and it looks pretty similar to the one
+for accessing from the list
+there's not really spending all this
+time in any particular one place
+the code is is fairly evenly spread in
+terms of where it spends its effort
+and if we zoom in just here we can see
+that that's where the list pop function
+is called
+and we see that this particular test
+suite
+for popping from the back of a list it's
+only spending nine percent of his time
+actually doing the popping from the list
+the rest of its time is all spent doing
+something else
+okay so that's what we have from the
+back of the list now what happens we pop
+from the front of the list
+ah well that looks somewhat different
+and basically if we see here here is
+list pop now when it's popping from the
+front of the list
+it's spending 99.88 of its time
+popping from the front of the list and
+that pretty much reflects what we saw
+that pop from the front of the list is
+really slow
+so what does but it doesn't spend any of
+its time in pop
+what it's doing is calling other
+functions and in the end the function
+that's finally called that does the work
+is mem move and so we can see here that
+when you're popping from the front of
+the list
+python is spending 99.85
+percent of its time actually copying
+memory from one place or the other and
+so
+this pretty much confirms our hypothesis
+that the
+python lists are stored consecutively in
+memory and when you delete from the
+front of the list
+the main thing that's happening is it's
+copying the whole list
+back one place in memory and so it
+spends all its time
+copying memory instead of actually doing
+anything useful
+i really like flame graphs i think
+they're they're a great way to visualize
+where your code spends its time so you
+can really sort of dive into them and
+figure out
+why is it slow what's it spending all
+its time actually doing
+and i think that's a really useful way
+of being able to use visualization
+to help you make your code better now
+while we're on our visualization
+diversion here's a video you've probably
+seen before
+nine eight seven six
+we have main engine start four three
+two one and liftoff
+liftoff of the 25th space shuttle
+mission
+and it has cleared the tower
+feet per second altitude 4.3 nautical
+miles down range distance three nautical
+miles
+[Music]
+engine's throttling up three inches now
+104 challenger
+one minute 15 seconds velocity 2900 feet
+per second altitude nine nautical miles
+downrange distance seven dog
+so just what caused challenger to
+explode
+for those of you who aren't space geeks
+like me the solid rocket boosters
+on the side there were built from
+sections
+and those sections were sealed with
+rubber o-rings and a kind of heat-proof
+putty
+the o-rings were never expected to be
+damaged by heat but
+in a number of prior launches there had
+been partial burn through of the o-rings
+especially when the temperature was low
+on the 28th of january
+1986 forecast temperature at launch was
+just below freezing
+and that was by far the lowest
+temperature the shuttle had ever
+launched at
+the engineers at moreton alcohol were
+really worried and tried to get nasa to
+postpone the launch
+unfortunately they were unsuccessful
+challenger launched
+and we all know what happened next it
+turned out that
+one reason the ngs were unsuccessful was
+how they visualized the data
+here's the graph they used
+now whilst this graph is correct it
+doesn't really make the case that
+temperature
+is really important so it's not
+surprising that nasa failed to postpone
+the launch
+here's the same data presented by edward
+tuft who is kind of the guru of
+visualization
+a number of things are crucially
+different first
+he also plots the points where no burn
+through has occurred
+this makes the trend much clearer then
+he also extends the x-axis down to the
+forecast launch temperature
+so it's obvious how much colder it will
+be
+this makes it clear that there's no data
+available
+anywhere near that low but all four cool
+launchers had problems
+they were truly in unexplored territory
+finally extrapolates a curve now you can
+argue about the extrapolation
+but it does make the point strongly if
+this graph had been presented
+nasa could have argued about how the
+extrapolation was done
+but in the absence of more data they
+wouldn't have been able to ignore the
+trend
+so there you have it what caused
+challenges to explode was poor data
+visualization
+they should never have launched and if
+the firecracker engineers presented the
+data properly
+disaster probably would not have
+happened now
+it's unlikely any of your graphs will
+have the consequences like this
+but how you present data can make all
+the difference in your ability to
+actually make the case you're trying to
+[Music]
+make
+now i'd like to introduce you to what i
+refer to as the bookshop problem
+back when i was a student we'd have to
+go out and buy the books for our courses
+because nothing was available online
+and near to ucl there were three large
+book shops
+there was dylan's which was fabulous i
+love dylan's there was
+lewis's which unfortunately is no longer
+there and there was foils
+and when i had to buy a book i would try
+dylan's first
+then i would try lewis's and finally as
+a last resort i would try foils
+now why would i try fours as a last
+resort well the old thing about foils is
+it was by far the largest in the
+bookshop so it had
+absolutely everything but the problem
+with foils is
+i can never find anything in there
+it took me a long time to realize why i
+couldn't find anything in there
+foils was run by a woman called
+christina foyle and as far as i can tell
+she organized the bookshop for her own
+convenience and not for that of her
+customers
+so what does she do well most bookshops
+have
+the books organized alphabetically by
+author or perhaps by title but christina
+foyle
+organized foils alphabetically by
+publisher
+well as a student i never knew who
+published the books i wanted
+so my strategy in there was to basically
+wander around at random
+until i failed to find the book i was
+looking for but found something else
+that was interesting instead
+and bought that and as far as i can tell
+that was the only way that foils managed
+to stay in business
+there's only one known algorithm for
+finding a book in foyles back then
+and that was to find christina foyle and
+ask her
+and she knew where absolutely everything
+was and so if you could find her you
+could find the book you wanted but other
+than that
+the only strategy remaining was
+basically to go
+and wander through the bookshelves
+scanning linearly through them until
+you've found the book you wanted
+or you failed to find the book you
+wanted and bought something else
+so that's the bookshop problem how do
+you find something
+in a bookshop where things are organized
+in a way that you don't understand or
+maybe not organized at all
+and we're going to try and address this
+problem in python and see how we get on
+the python equivalent to the bookshop
+problem is
+we're given a list of items and we have
+to write a function
+we'll call it is in and the is in
+function
+returns true if a particular item we're
+looking for is in the list and it
+returns false if the item is not in the
+list
+and so that's the problem we're going to
+try and solve
+we don't know anything about the
+structure of the items in the list
+they're just a bunch of items in the
+list just like in foyle's bookshop
+so how do we go about doing this
+well let's actually write some code
+now before we actually write this
+function let's actually write some tests
+so that we're sure whether we've got the
+function right
+so we'll write a little test
+function that tests whether we've got it
+right
+and so we're going to assert that
+if we call is in with
+a list of numbers let's say 1 2 3 and
+we've got an item that's in the list say
+one
+that that is actually true okay that's
+a quick test for whether that works now
+maybe we should add
+some more which we should test for
+whether the last one is in the list
+and we can also test whether
+an item is not in the list it correctly
+returns false
+and maybe one more test case let's
+test the special case of when the list
+is empty
+okay so that's a little test suite for
+our function
+if we if it passes all of those tests
+we've got some confidence that maybe
+we've got the function right
+so how are we going to actually
+test whether something's in the list
+well let's define our function now
+is in and it's going to take a list
+and it's going to take a target what
+we're looking for in the list
+now what we're going to need to do here
+is to search through every item in the
+list and see if it actually is there
+so we'll use a for loop for that for
+item in list
+if item is equal to target
+return true
+okay and if we get all the way to the
+end of the list and we haven't yet found
+the item then we're going to return
+false
+so what will this do it's going to go
+through the list
+as it goes through the list item will
+become the first item then the second
+item then the third item
+and as it keeps iterating through it
+will test whether that
+item is equal to our target and return
+true if it is otherwise it returns false
+that's a very simple program
+well should we test whether it works
+and it passed our tests
+so that's good we've we've now got a
+function we have some confidence in
+because it passed
+at least these four tests um and so
+that works but searching for an item in
+a list is
+not really a very efficient operation
+like this
+what can we say about the the how long
+it takes for this
+algorithm to complete well let's assume
+that the list has n elements
+the algorithm will iterate over all n
+elements if the item we're searching for
+is not in the list and then it returns
+false
+if the item is at some random position
+in the list
+it will iterate through on average n
+over two
+items and so what we can see here
+is that the average time it takes this
+algorithm to complete
+is proportional to the size of the list
+and
+this specific sort of number of steps it
+takes in some
+abstract concept of what a step is is
+referred to as the algorithmic
+complexity of the algorithm in this
+particular case
+the algorithmic complexity the time
+complexity of this algorithm
+is proportional to the size of the
+problem in this case the size of the
+list
+and in general when we're comparing the
+time complexity of algorithms what we
+care about
+is how the complexity increases
+for large enough parameter sizes we
+don't really care very much about
+the time complexity of an algorithm when
+there's only three items in the list
+but if there's a billion items in the
+list we care a lot about the time
+complexity
+and we saw that earlier when we were
+trying to delete from lists we care a
+lot about the time complexity of
+deleting from the list because it can be
+so incredibly slow if we use the wrong
+algorithm
+we should probably formalize what we
+mean by time complexity
+in computer science the main way we do
+this is using what's known as
+big o notation
+so what do we mean with
+big o notation well suppose that we've
+got an algorithm that takes
+f of n steps to complete on average
+we define this this order of notation
+big o
+as f of n our original number cad steps
+is
+equal it basically has an order of g
+n um as a complexity
+as n goes to infinity so as the problem
+gets big if there are constants c
+and n 0 such that f n is less than
+some constant g times g of n for
+all values of n that is efficiently big
+okay so that's a little bit to take in
+so so what are we doing here
+what we're looking for is some
+simple expression of the complexity of
+our algorithm
+g of n simpler than our original
+expression because we care about is what
+dominates as the problem gets big
+and so what we're looking for is some
+expression g of n
+that is going to be the bound on
+the complexity of your problem so for
+some constant g f of n is going to be
+less than that for sufficiently big
+values of n
+okay so probably easier to understand
+this with an example
+so for example if our algorithm takes n
+squared plus 10 n plus 100 steps to
+complete
+we would say that that algorithm has
+order n squared complexity
+now why is it order n squared don't the
+10 n and the 100 matter
+well they don't matter as n gets big so
+we can find values
+in this case c and and n 0
+for which n squared plus 10 n plus 100
+is always less than in this case three
+times n
+squared when n is big enough in this
+case when n is greater than 10.
+so that's what we're doing we're trying
+to figure out a way to express how our
+algorithm scales
+as n gets big
+okay so a function we just defined to
+find out whether something is in a list
+well on average you have to
+go through half of the items of the list
+so that would be n over two
+we would say that has order n time
+complexity we don't really care about
+that constant
+over two it's just order n
+and what about the other operations that
+we looked at earlier on the list
+well popping from the front from the
+front of our list
+that has order n time complexity because
+we had to copy
+n items down when we deleted the first
+item in the list
+whereas deleting the last item in the
+list
+it didn't matter how big n was so it's
+independent then we'd say that has order
+one time complexity
+when we deleted the middle item of the
+list we had to copy
+half of the items down so that was
+proportional to the length of the list
+and so we still say that's order n
+when we're appending to the end of the
+list it didn't matter how big the list
+was it was cheaper no matter what so
+that was order one
+and when we index into the list to
+access an item by its position
+that's also order one so is it possible
+that we can
+do better than order n when we're
+searching through a sequence
+like our is in function actually it
+turns out no
+there is no better way than
+order n out complexity algorithms in
+order to search to an arbitrary sequence
+however if you're going to access things
+um in a sequence quite often then
+it might be worthwhile pre-computing an
+index on the sequence
+so what's an index is simply a sorted
+view of a sequence that allows very fast
+is in operations
+okay so let's suppose i've been all
+organized and i've actually sorted all
+the books
+in this bookshelf alphabetically by
+author
+so now when i want to find a book by say
+richard feynman
+i can go to the middle of the bookshelf
+and have a look here and i see that
+f is before this so i can go
+to the first half of the bookshelf and i
+go halfway through that and i look at
+this book here
+and i go ah it's after that one in the
+bookshelf
+so now i go halfway through the
+remainder of the books i end up about
+here and i look at that one
+and it's before that one then i go
+halfway through
+the reindeer again and i look at this
+one it's after that one
+it's before this one it's after that one
+and finally i've reached the books that
+i was looking for
+here we go
+[Music]
+now this brings us to the story of sisa
+ben dahir
+wazir of the court of king sharam of
+india
+now according to legend sister invented
+the game of chess
+and the king loved the game of chess so
+much he offered sissa
+any reward he could name now sister
+being a smart man
+thought for a while and then asked for
+one grain of rice on the first square of
+the chessboard
+two grains of rice on the second four on
+the third
+eight on the fourth and so forth
+doubling each time
+the king laughed and readily agreed to
+sissy's demand
+but perhaps the king shouldn't have
+agreed quite so quickly
+i think this calls for an experiment
+like good computer scientists we'll
+cause
+first square square zero and put one
+grain of rice on that
+two on the next four eight on the next
+16 32 grains of rice
+64 grains of rice and on the last square
+in the first row 128 grains of rice
+now i have to admit by this point i got
+a bit bored of counting grains of rice
+so let's just keep track of how tall the
+pile would actually be
+on the next square we're going to have
+256 grains of rice that'll be about 4
+millimeters high
+then 512 and we'll keep going
+and by the end of the first row
+we're up to 32 768 grains of rice and
+about half a meter tall
+we can keep going though by square 21
+we've reached the height of nelson's
+column in london
+if we keep going by square
+29 we've reached the top of mount
+everest
+and by square 31 we erupted two billion
+grains of rice
+that's a lot of rice but if we carry on
+going
+along row five we pass the international
+space station and row five with a pile
+of rice that's eight thousand eight
+hundred kilometers high
+by square 45 we've passed the moon
+by square 53 our pile of rice is high
+enough to reach the sun
+and by square 58 we've passed all of the
+planets
+and we keep on going and by the end of
+our chess board on square 63
+it takes a beam of light nearly six days
+to travel from one end of the pile of
+our
+of rice to the other end of the pile of
+rice that's a very tall pile of rice
+so it seems unlikely that sister ever
+got his reward
+in fact it probably didn't end well for
+caesar because kings really don't like
+being tricked
+but why am i telling you this story well
+it's been my observation that very few
+people intuitively get
+what happens when you got exponential
+growth um
+certainly saw that a lot with covet this
+year um
+turns out that exponentials turn up all
+the time in computer science
+but the other thing that we turned up a
+lot in terms of analysis of algorithms
+and things like that
+is logarithmic behavior and that's just
+the inverse of the exponential
+so rather than asking how many grinds
+are rice on a particular square
+you ask which square has that number of
+grains of rice
+and logarithmic behavior is something
+that we find extremely desirable in
+computer algorithms
+now if we come back to our algorithm for
+for searching
+through our sorted bookcase i think it's
+reasonably clear that for each step of
+the algorithm
+we're halving the number of books that
+remain to be searched
+and this algorithm is called a binary
+search each step you have the remaining
+search space until you eventually find
+the thing that you're looking for now
+i think it should be reasonably
+intuitively obvious to you that
+the number of steps that you must take
+to find something in a bind research
+is going to be proportional to the
+logarithm of the size of the space
+you're searching
+but perhaps just being intuitive is not
+enough let's actually
+prove that this particular algorithm is
+order log n
+let's start by considering the size of
+the remaining range to search
+size of the range n is equal to the
+index at the end of the range minus the
+index of the start of the range
+and at step zero n is equal to n zero
+which is the full size of the of the
+space that we want to search
+at each step the range becomes a
+fraction
+alpha of its previous size now we're
+doing integer division by 2
+so alpha is approximately 0.5
+from this we can infer that ni the
+size of the range at step i is equal to
+alpha
+times n i minus 1
+and from that we can infer that ni
+is equal to alpha to the power of i
+times n 0.
+so with that set up we can start to try
+and
+answer the question we want to answer
+which is after how many steps i
+will ni become one if when ni becomes
+one the search will end
+now we can do this by simply
+setting alpha to the power of i times n
+0 to be 1
+and solving for i so
+we can take the logarithm of both sides
+to get this step
+we can just work out the
+push the logarithm through the powers
+here to get i log
+alpha plus log n0 is equal to zero
+and we can then invert the equation
+so that i is equal to this constant
+minus 1 over log alpha times log n
+and as this is a constant we don't care
+about it from an algorithmic complexity
+point of view
+and so the this algorithm is order log n
+okay so now we know the complexity of
+binary search
+how about we implement it in python
+okay so we need to define ourselves
+another is in function we call it is in
+binary
+and it takes a list that we want to
+search and a value we want to search for
+okay so first of all we need to set up
+the range that we're searching
+so the start of the range is going to be
+the zeroth element
+and the end of the range is going to be
+the
+last element actually one after the last
+element so
+len of list
+now we need to go through and keep going
+through this
+list until that range has decreased to
+one
+so while end minus
+start is greater than one then we're
+going to keep doing our binary search
+so first of all we need to look at the
+middle of the range and see which we go
+next so
+the middle index of that range is going
+to be
+start plus end
+divided by two now we need to look at
+the middle of the range and figure out
+whether we need to search the left hand
+side or the right hand side
+so if the the value is
+greater than the element that's in the
+middle of the range
+then we're going to look at the right
+hand side which means for me to move the
+start
+across to to match the middle so start
+is equal to middle
+otherwise we need to move the end down
+to where the range is
+so end is equal to middle
+and that's pretty much it now
+once the size of the range decreases to
+be one
+we're going to actually have to figure
+out whether we've found the correct
+element or not
+so we're going to return the
+result of comparing
+start of our range because our range
+only has one element in it by then
+with the value and so that's it
+basically we
+initialize our range to be the full
+length of the list
+we loop through until the range is
+narrow enough that we're down to only
+looking at one element
+each time we go through we figure out
+what the middle index of the list
+is we compare the middle index to the
+list with the value we're searching for
+if the value is above that one we move
+the start up to the middle
+if the value is below that one we move
+the end down to the middle
+and when this while loop finally
+completes
+there'll only be one element left that
+will be this start and we check whether
+it equals the value
+there's just one more thing we probably
+should do because
+if we call this function with an empty
+list it's not going to do the right
+thing
+it will try and look at the concepts of
+list start but there isn't a list out in
+that case and so
+that will cause us to have an error so
+we actually need to have
+one more condition if length of the list
+is equal to zero then don't bother doing
+all this stuff just return
+false and that's it that's a full binary
+search
+implemented in python and that will if
+you've got your data in the list
+all sorted nicely and the correct order
+that we can apply these comparisons to
+it
+then this will find the element in the
+list in order log n time
+now one thing to note here is that
+there's a really intimate link
+between data structures and algorithms
+if we think about our plain sequential
+search
+that works on on any list of data
+doesn't need to be sorted or anything
+else it just works
+but it has order n complexity
+if we on the other hand have a list
+which is
+sorted so we've got structure to our
+data we can now apply band research
+algorithm to it
+and now we can actually search that same
+data in order log n time
+and this will come up again and again
+that there's a close link between the
+data structures and how we store our
+data and the algorithms we can actually
+use to
+access that data so does it really
+matter whether an algorithm is
+order n or order log n i mean is there
+really that much difference
+well you should think back to the
+chessboard it makes quite a big
+difference
+so remember that order log n is
+proportional to the number of binary
+digits in
+n so if n is say a million
+then a sequential search is going to
+take a million steps
+whereas a binary search is only going to
+take 20 steps
+so then gets big and it often will for
+large amounts of data that we process
+that can make a really big difference as
+end goal as then grows
+now there's one more trick i want to
+show you before i finish for today
+and that's called recursion the function
+is recursive
+if it calls itself which might seem like
+a bit of a strange thing to do but i'll
+show you in a minute why it isn't
+and pretty much any function that you
+can implement using loops can be
+implemented using recursion
+or vice versa it doesn't change what you
+can do
+but some algorithms are more naturally
+expressed as recursive solutions
+rather than as iterative solutions with
+loops
+the problems that tend to be nicely
+expressed as recursive stations tend to
+be divide and conquer type algorithms
+where you're calling the same function
+again and again but with smaller and
+smaller parts of the data until
+eventually you come up with the solution
+and that's pretty much exactly what's
+going on with binary search we keep
+halving the size of the list that we
+have left to search
+and so this should probably be a pretty
+reasonable
+problem to solve recursively so how
+about we
+have a look and see if we can change our
+existing binary search solution to make
+it a recursive solution
+okay so i'm going to start off with the
+same code we had before
+but i'm going to just modify it and make
+it recursive
+so first of all we've we're going to
+just call our new function is in recurse
+and we're going to call it with the same
+list we had before the same value we had
+before
+and going to initialize the start to be
+n
+and the end to be the length of the list
+start to be zero and then to the end of
+this
+okay so now we're going to actually
+define this new function
+is in recurse
+list value start end
+okay so what are we going to do
+first of all we're going to
+need to check whether we're actually
+done because each time
+is in recurse gets called it will be
+with smaller and smaller amounts of data
+and maybe we're already done
+so when are we done we're done if
+there's only one item left in the list
+so if n minus
+start is equal to one then we're done
+so in that case we can do exactly what
+we did before
+we can return this
+so if we found the right element then we
+return true if we found the wrong
+element then we return
+false okay so now
+what happens if we actually are not done
+yet we have more than one element
+we're going to do the same thing we did
+before we're going to figure out what
+the middle element is of the range we've
+got left
+and then we're going to compare the
+value with it so we'll set middle to be
+start plus n divided by 2 exactly as we
+did before
+and we'll compare the value with it and
+if the value is greater
+than the middle now we're going to do
+something different now we're going to
+call ourself
+so i'm going to return the results
+of calling is in recurse again
+same list same value but in this case
+the value is greater than the middle
+element of the list so we want to pass
+in as the new
+versions of the start and end parameters
+the second half of the list
+so we're going to set start to be middle
+and
+n stays the same
+if that's not true if value is
+less than the element in the middle then
+we want to use the lower half of the
+range
+so start up to middle
+and that's it so let's just recap how
+this works
+our original function is in binary does
+the initial sanity check to make sure we
+actually have some elements in our list
+if we do have any elements in our list
+then we're going to call our new
+function is in recurse
+passing in the list and the value and
+we're going to
+use 0 as the first initial value for for
+start
+and we're going to use the length of the
+list for the initial value of
+end so the first time this call is going
+to be passed it called in with the whole
+list
+it first of all checks if we're done if
+there's only one element left in the
+list
+is it the right element if it is return
+true if it's the wrong one we return
+false
+if there's more elements returned in the
+list we find the index of the middle one
+and we compare the value we're searching
+for with
+the element in the middle of the list
+if the value is greater than the element
+in the middle of the list
+then we're going to recurse we're going
+to call our function again but with only
+half of the data
+in this case we're going to call it with
+the data from the middle to the end
+if value is less than or equal to the
+middle item of the list
+then we're going to call is in recurse
+with the other half of the data start
+up to middle and so in this way we keep
+calling is in recurse again and again
+and again but each time with only half
+of the data that we haven't searched yet
+and eventually we get to the point where
+there's only one element left
+this condition is true and we end up
+comparing
+our value with the one we found and we
+know then whether we've actually found
+the correct element or whether it's just
+not there
+and that's it that's a full recursive
+binary search solution
+sometimes recursion is more elegant as i
+say and sometimes
+using a loop like a while loop is more
+elegant
+i don't think there's a great deal in it
+in this particular case i think maybe
+the recursive solution is just slightly
+more elegant
+because it kind of expresses the the
+nature of the problem
+more explicitly than the news in the
+loop but another great deal in it in
+this case but in other cases the sushi
+is just much more natural to use for
+cursion than it is to use loops or
+sometimes the other way around sometimes
+it's much more natural to use a loop
+okay so that's it for today all of the
+codes that i've
+typed in will be on the on the course
+github repository
+so you can actually go there and get the
+code and run it for yourself and try it
+out if you wish to understand better
+what's going on
+see you next time
+[Music]
+you
