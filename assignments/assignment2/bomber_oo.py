@@ -32,7 +32,7 @@ class Point(object):
         self.Y = self.Y + dy
 
     def __str__(self):
-        return "Point(%s,%s)"%(self.X, self.Y) 
+        return "Point(%s,%s)"%(self.X, self.Y)
 
     def getX(self):
         return self.X
@@ -47,7 +47,7 @@ class Point(object):
 
 ''' update_position takes a list of x and y coordinates and a Point.
     It creates a new list of x and y coordintes by adding the Point to all
-    the coordintes from the original list '''    
+    the coordintes from the original list '''
 def update_position(position_list, position):
     newlist = []
     is_x = True;
@@ -259,7 +259,7 @@ class Display(Frame):
         if plane_body_bottom.getY() == CANVAS_HEIGHT and plane_body_bottom.getX() < 20:
             self.plane_landed()
 
-    ''' game_over is called when the plane crashes to stop play and display the 
+    ''' game_over is called when the plane crashes to stop play and display the
         game over message '''
     def game_over(self):
         self.game_running = False
@@ -294,7 +294,7 @@ class Display(Frame):
         #don't move to next level unless we've actually won!
         if self.won == False:
             return
-        
+
         self.level = self.level + 1
         self.canvas.delete(self.text)
         self.canvas.delete(self.text2)
@@ -304,7 +304,7 @@ class Display(Frame):
         self.create_buildings()
         self.won = False
         self.game_running = True
-        
+
     def update(self):
         if self.game_running:
             self.score = self.score + self.plane.move()
