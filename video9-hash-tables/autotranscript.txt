@@ -1,0 +1,884 @@
+welcome back everyone
+in today's episode we're going to look
+at python dictionaries
+and in particular we're going to look at
+the data structure that underlies a
+python dictionary
+which is a mechanism called a hash table
+so let's get started
+
+okay so let's start by creating a
+dictionary how do we initialize a
+dictionary
+dictionaries in python are initialized
+using squiggly brackets like that
+and whenever you initialize a dictionary
+you're going to initialize it in that
+way this would be an empty dictionary
+but we're going to initialize this one
+to actually have some data in there
+and so the data for a dictionary
+consists of a bunch of key
+value pairs so that perhaps is a key
+name and then use a colon and then the
+value we want to associate with our name
+say mark and then we can
+add a whole bunch of additional
+types here so we can say my age
+[Music]
+and that's 157 and
+we can add say the course i teach
+and that's uh eng f2
+eng f okay right eventually
+two okay and so that would initialize a
+dictionary with
+with three key value pairs in it the the
+keys in this particular
+case are strings but you can use
+most types as the strings they're
+basically the type itself
+has to be hashable and we're going to
+come back to that a little bit later as
+to what we mean by that
+but things like strings numbers things
+like that can be all used as
+keys tuples can be used to keys but
+lists can't be used as keys because
+they're
+actually mutable and it wouldn't really
+make sense to use a key as something
+that can actually change
+and again the values can be any type we
+want they can be
+strings they can be numbers they can be
+objects of your own creation
+doesn't really matter what the type of
+the value is python can cope with that
+so once we've created a dictionary maybe
+we want to actually
+extract some stuff from the dictionary
+so let's say
+we want to print out what the name is um
+and we can extract that from the
+dictionary dict
+and then we use square brackets here to
+extract from dictionary
+that's the same as the square brackets
+we use to index into a python
+list but here of course it's not limited
+to being a number
+it has to be whatever type you use for
+the key and so
+that will print out hopefully name and
+we can extract
+another one so for example we can
+extract the course
+and so that's
+the basic idea we insert data into the
+dictionary there's a key
+name and the value associated with that
+key this case mark
+and then we can extract things back out
+again using
+the square bracket notation to specify
+the key and it will hopefully give you
+back the value
+so let's run that python
+dot pi and see what it does and indeed
+our output from these print statements
+is name mark which you got back out of
+the dictionary
+and course engf2
+now once we've actually created our
+dictionary we can add things to it later
+so we could for example
+actually do dict let's say
+key here room my room number at ucl not
+that i've been there for a while
+is equal to mpeb
+6.21
+and so we can insert into the dictionary
+in that way
+and we can just verify that that
+actually works by
+printing it out again
+and quiero room
+you notice i am
+when i inserted by room i was a bit
+careless
+and typed a colon there so you have to
+have a match if you don't get a match
+and it doesn't find it in the dictionary
+then that's going to
+raise an error in this particular case
+it's going to raise key error
+okay hopefully i'll fix that
+and now indeed it extracts correctly
+okay so we can do that we can modify
+elements in the dictionary
+say it's my birthday then we can do say
+[ __ ]
+age i do have to type them correctly
+though
+um plus equals one and that will
+add one to my age and
+let's print that out just to check that
+it's working
+python again and you can see that my age
+has now become 158.
+so that's the basic concept of a
+dictionary we can
+create a dictionary initializing it with
+data we can insert items into the
+dictionary
+giving the key and the value we want to
+put in there
+we can modify items in the dictionary
+and so forth so that's the general
+principle
+now you can get a bit more fancy than
+this and you can do things like
+dictionaries of dictionaries and so
+forth so what does that look like
+well here i've created three
+dictionaries this is one for me
+there's one for my colleague brad carp
+and there's one for
+my colleague stefano and so
+those are just dictionaries like we've
+just seen but now i can create another
+dictionary for example
+courses and the items in this are
+indexed by their course name
+but the values i'm putting in are
+actually these dictionaries here
+so creating a dictionary courses that
+has a
+key that a string which is the course
+name and the
+value is actually a dictionary its own
+right that lets us
+[Music]
+the first component that we want to make
+for building a hash table
+is you want to make a hash function so
+what does that do
+a hash function takes whatever we're
+going to use as the key
+for our dictionary and it produces an
+output some integer
+now exactly which integer gets produced
+is not really all that important though
+it might affect the performance of our
+hash table
+but the main property we want from this
+is that
+for different values of key we want
+different different integers to come out
+so for example if we feed it an actual
+integer on the way in
+it could simply give us the same integer
+back and that that has the property that
+for
+each key we have a different value
+coming out
+for say floating point numbers 10.1
+then we still want to have different
+integers coming out but they don't
+necessarily need to bear any resemblance
+to this
+and so we might simply take whatever the
+floating point representation is
+in the memory of the computer and
+directly interpret that as an integer
+and that gives us some
+stupidly large number i don't know what
+that number
+actually is for 10.1 but something like
+that
+and then similarly if we want to use say
+a string as the key
+the property we want is that each string
+for
+pretty much any reasonable set of
+strings we ever choose is going to come
+out with a different integer and again
+it's going to be something big
+and then that gives us
+a pretty large range of different values
+that come out of our hash function
+we're going to use those particular
+values those integers
+to index into a data structure
+so how we're going to do that part
+well suppose we know in advance that
+we're going to want to store
+let's say four values in our particular
+hash table
+what we can do is we can essentially
+arrange
+for for us to have what is effectively a
+python list in memory
+and then each of these lists is
+initialized to be empty to start with
+but if you like this is something like a
+list of lists
+then when we want to insert something
+into here well suppose we want to insert
+into our dictionary the key
+hello well
+we feed hello through our hash table and
+we come up with our very large integer
+whatever that is x and then what we do
+is we need to map
+this value x which may be something in
+the hundreds of billions
+into something in the range of zero to
+three and so
+we just do that modulo 4
+which will give us some number into here
+and let's say for that that happens to
+equal
+2. so index into here to get element
+number 2
+0 1 2. and then we store
+hello
+as the key on there along with whatever
+the value we have with that key
+and then if we want to add additional
+elements to here
+suppose we want to add world
+and that came out with a
+after we're doing the modulo 4 came out
+with an index of 0
+then we index into here and we store
+world here
+along with its value and so forth
+and so what we're getting out of this is
+is a way to insert items into
+the this list and then store them
+in the appropriate position along with
+their key and the value
+now later on when we want to actually
+access the item that's in the hash table
+we do the same thing we take hello we
+calculate its hash function to get x
+we do x modulo 4 which gives us two we
+index
+into the list and then we find our key
+value pair stored
+right where we left it and so the really
+interesting thing about this is that
+actually the mass of calculating this is
+really fast
+computers are really quick at doing
+maths and it's a constant time operation
+it doesn't take a variable amount of
+time depending on how many things we
+have in the hash table
+and so calculating this takes a constant
+amount of time
+we know that indexing into into lists or
+arrays takes a constant amount of time
+so finding an item in our hash table is
+going to take
+order one time which is a really nice
+property
+we can now take arbitrary key value
+pairs and we can store them
+and access them in order one time which
+is
+great but we're not quite done yet
+[Music]
+okay so that's fine except for one
+little tiny wrinkle in this thing
+suppose i
+i then hash let's say mark
+and that comes out with after doing
+x modulo 4 comes out with two as well
+so now when i want to insert mark into a
+hash table i index down i get to number
+two
+and i discover that there's already
+something there
+and so that's a problem
+how am i going to solve that well what
+you do
+is instead of just storing the the key
+value pairs at each of these
+we store them as a linked list
+and so now when i want to look up
+hello i feed hello through my hash
+function i get to i go here i go here
+and i find hello there no problem as
+before
+if i want to look up mark then
+i feed mark through my hash function
+modulo 4 and get 2 out
+i index into here and i look there and i
+discover that actually the the key i
+want is not
+there but i can go down the chain and i
+can i eventually find
+ah so key mark is here it's just not the
+first one in the chain and so i index
+down there
+then i can get out the value that's
+associated with that
+so that's the general idea that
+if sometimes we're going to get hash
+collisions some things are going to end
+up
+after the modular arithmetic hashing to
+the same bucket in our in our hash table
+and when we hash the same bucket we
+simply store a list of all the key value
+pairs that hash that bucket
+and we search down that list now
+obviously you know that searching
+through a linked list for a particular
+item
+is going to take order n time and so the
+goal here is to keep these lists as
+short as possible
+if these lists start to get long then
+the performance is going to degrade
+so i've got my little hash table with
+four elements in it and now i want to
+store a million more items in my hash
+table
+that's not going to work very well so
+what do you do
+well what you look at is is how many
+items in here are actually got things in
+them
+and once you hit a threshold where about
+two-thirds of the items in the hash
+table have items in there
+then you expand the table
+and what you typically do is when you
+hit this threshold is you'll double the
+size of the table
+and that involves going through and
+rehashing everything to come up with an
+index into a longer table
+and that takes a little bit of time at
+the point you do that it's only order n
+time to do that expansion but every now
+and then you'll have to do it
+and so typically that's why will double
+the size of the hash table each time we
+want to add some more space
+and so the number of expansions you have
+to do on your hash table then ends up
+being relatively few if you double each
+time if i want to
+insert a million items into a hash table
+then the number of expansions is only
+going to be order of
+log a million which is not too bad
+so in that way our hash table wastes a
+bit of space there's always want to have
+some empty items in there because
+otherwise the lists get too long
+but that's the trade-off you part you
+pay for trying to get out order one
+complexity out of a dynamic data
+structure
+but that price is often well worth
+paying because that order one
+insertion and lookup time in a hash
+table is is fabulous
+you can't really beat that
+now last time we looked at trees and
+trees have order log n insertion and
+deletion time
+and hash tables have order one insertion
+and donation time
+so why would i ever use a tree well the
+key difference between a tree
+and a hash table is the data in a tree
+is sorted
+the data in a hash table is not sorted
+and if all you're going to do is to
+insert and delete and look up items
+then the hash table is the way to go
+because we get order one time
+but if sometimes you need to know what
+the first item is the lowest item
+or if sometimes you're going to need to
+extract them all in the sorted order
+then the tree is the way to go so for
+example
+in a lot of my simulation code i use a
+tree
+for storing the times at which things
+could happen because
+what i'm always going to extract from
+the tree is
+the first item that's going to happen
+but i'm inserting into the tree all the
+future events that might happen
+by their time and so the sorted property
+is really important for me there
+i get order login insertion time for all
+these future events
+and i get order one extraction time for
+the extent because i always know
+that the what the first item in the in
+the tree is
+but that's um that's a interesting
+comparison between trees and hash tables
+sometimes you really care about being
+able to get the items out in sorted
+order
+and sometimes you really just don't care
+about it at all in which case you should
+use a hash table instead of a tree
+[Music]
+in python you'll probably never need to
+implement your own hash table
+because you've always got python's
+built-in dictionary type
+but just to make the ideas we've seen
+concrete i'm going to show you a minimal
+implementation of a hash table in python
+so this is my hash table class
+and as always we need to initialize it
+so what will the init function do
+well it's going to create all of the
+hash buckets
+and actually i'm going to feed it in a
+list of key value pairs
+in order to actually initialize the data
+in the hash table
+now what do those key value pairs look
+like well it's going to be a list
+and within that list there are tuples
+and the tuple consists of a key
+and a value so for example the first key
+i want to insert might be
+mark and the first value i want to
+insert might be my email address and so
+forth
+so that's going to be our initial data
+that will feed into our hash table
+okay so what are we going to do there's
+really only two things we need to keep
+track of within our hash table which
+is the the hash buckets and how many
+hash buckets we have
+so i'm going to set the the bucket count
+initially we'll set it to
+the number of elements we want to store
+in our in our hash table kind of a
+minimum
+amount um so if we insert four
+elements initially then we'll end up
+with the bucket count being four and
+then we need to create those hash
+buckets
+and so in python i'm going to use a
+python list
+to hold all of the hash buckets and
+within each hash bucket
+there's also going to be a list to
+implement the
+the elements that might hash to that
+particular bucket
+now in a real hash table implementation
+i would probably use a linked list for
+that rather than a python list
+because it has better deletion
+performance but for the sake of
+simplicity here i'm going to use a
+python list for each of those hash
+buckets
+okay so this here creates a
+list of empty lists
+so how many of those i'm going to create
+i'm going to create
+bucket count of empty lists and so
+after this line has run the self.buckets
+will hold a list
+and all of the elements of that will be
+empty lists in each of those hash
+buckets
+then i'm going to go through and take my
+initialization data this element list
+take key value pairs out of that one at
+a time and call
+my insert function to insert key value
+pairs into the hash table
+okay so let's look at insert it's down
+here
+insert takes key value pairs
+the first thing it does is to calculate
+which hash bucket
+that particular key value pair is going
+to be stored at and to do that it calls
+self.getindex i'll come back to that in
+a second
+so that gives us the index of the hash
+bucket that we want to store the data in
+we find the relevant hash bucket by its
+index
+and then that hash bucket is itself a
+list so we'll call append
+to put the key value pair into that
+particular hash bucket
+what about get index what does that do
+well
+first of all it takes the key and calls
+hash on it now hash is a built-in python
+function
+that will calculate a hash of any
+particular data type that we want to
+throw at it
+now this is exactly the same hash
+function that python dicks use
+so we can use that to explore the
+behavior of python dicks if we wish
+so once we've got an integer out of that
+hash function we need
+to make that integer map into the range
+of our hash buckets
+and so we take that in [ __ ] and we do it
+modulo self.bucketcount
+and that will give us in this particular
+case because our initial element list
+had four elements
+this will give us an index into the hash
+table in the range of zero to three
+which we can then use to find the right
+bucket which we can then use to add the
+element onto it
+so that's how we insert into the hash
+table
+later when we want to look up something
+in the hash table we're given a key to
+search for
+we call getindex again which does
+exactly the same thing that happened
+before
+it will calculate the hash of the search
+key do it modulo
+the number of bucket counts and give us
+back an index
+now we can use that index to find the
+right bucket
+it's great but there might be more than
+one element stored on that bucket
+because we might have had a hash
+collision
+so we have to go through and check every
+key value pair that's stored on that
+particular hash bucket
+pull them out one at a time and check
+whether the key of the element on that
+hash bucket
+is the same as the key that we're
+searching for only if it is
+then we actually return the value and if
+all of that fails we're going to return
+none okay so that's our simple hash
+table implementation
+now let's just see how it works
+so the first thing i'm going to do is to
+create a hash table
+and we'll call it hash table
+imaginatively
+and we're going to feed it in this
+particular initial data which is this
+list of people's email addresses
+next thing i'm going to do is i'm going
+to pretty print the hash table and when
+i print out a class like this
+python will try to take a hash table and
+turn it into a string
+and when it does that it will
+if there's a function called underscore
+underscore strut underscore underscore
+then it will call that to do that and so
+i'm using some pretty print
+functionality to print out
+our list of hash buckets so that we can
+actually see what happened
+so we'll print out our hash table and
+then we're also going to actually look
+up in the hash table
+mark so hashtable.lookup mark
+and we'll print that out in this
+formatted string mark's email address is
+and hopefully it will come out with the
+correct email address
+okay so that's the idea i guess we
+should run it and see what it does
+run hashtable.pi
+and okay so the first thing is did the
+lookup work
+and the answer is yes it did mark's the
+email address is
+m.handley whatever
+so our hash table is working now
+can we actually see how stuff is stored
+well when we printed out the hash table
+we got this now if you recall
+when i initialized the hash table i
+initialize the number of buckets to be
+the same
+as the number of elements that we want
+to store in the hash table
+and we can see what's happened here the
+first one of those hash buckets managed
+to get me and lisha stored in it
+the second hash bucket got nothing the
+third hash bucket got graham and steve
+and the fourth hash where he got nothing
+and that's just sort of the nature of
+the randomness that's employed here from
+these hash functions
+it hasn't managed to distribute the
+elements properly across the
+hash buckets some of them have two
+elements some of them have no elements
+and that's
+not ideal
+so what can we do about it well we
+didn't really allocate quite enough hash
+buckets for the amount of data we wanted
+to store
+if you recall i said that normally we
+would resize
+the hash table when it got to two-thirds
+of the hash buckets being being filled
+so we should probably at least make that
+much space
+so times three divided by two
+and that will give us now hopefully
+six elements in the hash bucket hash
+table six hash bucket
+and hopefully that will fuse a few fewer
+hash collisions
+so let's run that
+and so indeed we now have six elements
+in our hash table
+unfortunately now we've got me and steve
+stored on one hash bucket
+at least graham and lisa get their own
+hash buckets
+so that's the general principle of hash
+tables they're one of the most useful
+data structures in computer science
+because they have this
+order one time complexity for doing
+insertions and lookups
+but you do have to be a little careful
+how you use them
+because it's entirely possible for that
+nice order one complexity
+to degrade to order n if you're
+not quite clear what you're doing so
+let me give you an example many years
+ago a friend of mine wrote
+one of the most popular network
+intrusion detection system
+software that's actually used in the
+real world and
+what this does is it monitors network
+traffic going to and from your
+particular site
+and tries to figure out whether anything
+bad is happening and of course every
+time a packet comes past it has to look
+it up to figure out
+well which connection is that packet
+associated with and so what is software
+does is it takes the
+the the ip source destination addresses
+and ports
+to basically identifying information for
+the connection and hashes it
+to look up the connection state and
+under normal circumstances that works
+really well a hash table is exactly what
+you want to do that the problem is for
+that particular application
+you're trying to deal with traffic that
+might actually be malicious
+and if the traffic is malicious then the
+the fields that you're hashing over the
+ip source and destination addresses and
+the
+and the ports that identify the
+connection are under the control of the
+attacker
+so now what can the attacker do well the
+attacker can generate traffic
+so he can just generate packets that
+will be then inserted as new connections
+into the hash table
+and if the attacker knows what your hash
+function is
+they may be able to generate many many
+many many many connections
+all of which hash to the same bucket in
+your hash table and as a result
+your performance goes through the floor
+and your system basically crashes
+and so somebody found this attack
+against his intrusion detection system
+and was exploiting it so you've got to
+be very careful how you use hash
+tables in this particular case the way
+around this
+is to not just hash the the fields that
+you specify as the key
+but you also want to introduce some
+random element that's concatenated with
+the key and you hash the whole lot
+and then every time you start up your
+system you start with a new random
+component
+and that means that the hash function is
+effectively a different hash function
+each time you run it
+and actually when you use hash in python
+what python does is every time it the
+interpreter starts up it will choose a
+random number
+when you hash strings in particular in
+python it will
+prepend that little random component to
+the string and so you'll end up with a
+different hash
+every time you run your program in
+python and that's to avoid this problem
+that
+it's too easy when you're building a
+hash table
+to have the data you're hashing be under
+control or someone malicious
+and they can control the data and
+therefore they can control
+how things build up in your hash table
+and deliberately cause the performance
+of your system to fail
+so a little got you there gonna be
+really careful if you're using hash
+functions
+and your keys are potentially under the
+control of someone who's malicious
+they can force you from order one
+complexity to order n complexity
+if you're not very careful about seeding
+the
+this secret key each time you use it
+now we can just see this in action we
+can just run python
+and we can actually look at what the
+hash of a string is so let's look at
+hello and that gives us some
+number some big number and every time we
+hash while that python instance is still
+running
+we get the same value which is necessary
+because we want the insertions and
+deletions on the hash table to match
+but if we stop python and we restart it
+and we hash the same string
+we get a different number and that's
+because when
+python restarted it generated some new
+random data to add to my string hello
+before it hashed and that provides just
+a little bit of protection against the
+malicious attacker coming along and
+trying to
+to cause all of your keys to end up in
+the same bucket on the hash table
+now it's not total protection because
+it's possible if they get to
+test your software for long enough they
+may be able to look at the timing of
+things and eventually be able to figure
+out
+which keys hashed to the same bucket but
+it's pretty good and it's a good
+starting point
+[Music]
+now hash tables are such incredibly
+useful data structures
+that people have put a lot of effort
+into trying to actually make
+improvements on them over the years
+so for example if what you care about
+more
+is the worst case performance as in how
+long it takes to
+access a particular data item rather
+than the average case performance across
+all the data items
+then there's a modification to hash
+tables that actually can can help with
+this
+this is called second choice hashing
+so what you can do is suppose that we
+want to
+insert another item into here we want to
+insert
+let's say brad
+well you feed it through your hash
+function and you get a particular
+value out and it comes out here now
+with second choice hashing we're not
+forced to put that on this particular
+hash bucket
+rather we can come up we can try a
+second hash function
+and so we fight it into this is hash
+function one we feed it through a hash
+function two
+and we come up with let's say this
+possibility
+and now we compare the length of the
+lists that are on these two elements
+in this case this one is smaller so we
+can insert
+brad in that particular location
+and in this way you do a much better job
+of balancing out how long the lists are
+on each of the hash buckets
+now of course there's a price you pay
+for this whenever you want to look up
+brad
+you have to feed him through both hash
+function one and hash function two
+and look on both of these until you find
+him but
+that price definitely although it
+increases the average time
+lookup it significantly reduces the the
+worst case lookup time and sometimes
+that matters more
+now there are a lot of other
+modifications to hash tables that people
+have made over the years
+because as i say they're just the most
+useful data structures and so
+if you're actually going to use a hash
+table in your own code
+for a very specific purpose you probably
+want to look up those
+possible extensions to to hashing
+so that's just about it for this episode
+we've covered
+python dictionaries and hopefully you
+now know how to use those in your own
+code
+and we've also covered how python
+dictionaries are implemented within
+python
+using hash tables which really are i
+think the most useful data structure
+in computer science see you next time

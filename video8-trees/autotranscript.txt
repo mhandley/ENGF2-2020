@@ -1,0 +1,1857 @@
+welcome back everyone
+
+in this episode we're going to continue
+our exploration of the area of dynamic
+data structures
+and in particular today we're going to
+look at one of the key data structures
+that you'll come across all throughout
+your career in computer science
+so let's get started
+
+let's quickly summarize what we know
+about data structure so far
+we've seen two data structures we've
+seen python lists which are also arrays
+in some other programming languages
+and we've seen linked lists now python
+lists
+we know that they're very efficient to
+add or delete from the end of the list
+so that's a constant type operation so
+both addition and deletion
+at the end of a list is order one
+on the other hand if you want to insert
+or delete
+at the beginning of a python list then
+we're going to have to copy everything
+along so both insertion and deletion at
+the beginning of a python list
+is going to be order n much less
+efficient
+and if we want to insert or delete into
+the middle of a python list
+that's also going to be order n
+again not very efficient now the plus
+side of python list is it's very quick
+to index into any position in the list
+if you've got the index
+so indexing into the position in the
+list is order one
+very fast now on the other hand
+we have linked lists and linked lists
+give us pretty good performance if we
+want to
+insert or delete at the beginning we can
+just easily go to the head and we can
+either insert or delete from the head
+with order one cost
+if we're at the tail of the list it's
+easy enough to actually follow the tail
+and add another item here
+so we can insert at the tail of the list
+with order one cost but it's a little
+harder to delete because you need to
+modify
+this pointer here and you don't have
+access to it
+so deletion at the tail of the list is
+going to be
+order n for a singly linked list
+and if you happen to be at the position
+in the middle of the list where you know
+the previous item then we can insert or
+delete in the middle of a list
+with order uh one cost
+but you have to know the previous items
+so i'm going to put a little star next
+to that
+on the other hand what linked lists are
+not good at is
+indexing in by position if i know which
+element i want to go to i still have to
+go to the head and hop along the list
+until i get there
+and so that's going to be order n to be
+able to find an element in the list
+now how about when we want to search the
+the data
+by value so we want to scan through and
+find the data
+by particular value we've got two cases
+really to consider
+we've got the case when the data is
+sorted and we've got the case when the
+data is unsorted
+the data is unsorted there's really no
+efficient way to do this
+either on the python list we've got to
+scan through to find the data if it's
+unsorted so that's going to be
+order n or on a linked list we've still
+got to scan through
+and find the data if it's unsorted so
+it's still going to be order n on that
+side
+on the other hand if we've managed to
+sort the data in our
+python list well that's when the list
+comes into its own because
+we can do a binary search we can go to
+the middle and then we can bisect each
+time
+and then we can actually search by a
+value in order login time
+so that's pretty efficient
+unfortunately the linked list can't do
+that with the linked list
+there's no way we can index in
+efficiently to a particular place
+which means we just can't do a binary
+search so unfortunately
+the linked list is not a good data
+structure for searching by value that's
+still going to be order n
+because the only real strategy is to
+start from the beginning and work our
+way through
+now this is fine doing a binary search
+on a python list
+if the data is sorted once and we want
+to search it lots of times
+but sometimes we want to search
+and sometimes we want to actually insert
+and delete items for it and if the data
+is changing a lot
+then the insertion or deletion costs on
+a python list
+are going to totally dominate the actual
+search time
+and so in that case python list is
+actually a pretty inefficient
+inefficient data structure even if we
+store it sorted
+so what can we do we'd like a data
+structure that has
+rapid insertion and deletion of data
+no matter where we want to put it into
+the data structure but we also want to
+be able to search it
+to be able to look up data by value very
+efficiently
+and so neither of these data structures
+do what we want for that
+so how can we do that
+[Music]
+so it turns out that in my own code i
+very rarely use a regular binary search
+but i do very often want to store items
+by by key and i'll associate with that
+key a particular value
+and then later on i want to be able to
+come along and look up
+items by key i want to be able to add
+new key value pairs
+i want to be able to come in and modify
+the values all that sort of stuff and
+it's a very very common thing i find i
+need to do in my code
+and there's a data structure that's just
+perfect for this that's called a binary
+tree
+so let me just draw an example binary
+tree i'm not going to show the values
+i'm just going to show the keys
+because otherwise it'll be too cluttered
+so here goes
+okay so there's a binary tree now the
+key thing about a binary tree
+is each of the nodes has two children
+a left child and a right child sometimes
+if they may be missing one of the tools
+if the node is a leaf node in the tree
+then it won't have any children
+now by the way this is known as the root
+node
+and by convention in computer science
+trees
+always grow downwards from the root and
+these are leaves
+now any normal person would put a tree
+the other way up
+but in computer science that's not how
+it is trees start with a root at the top
+and grow down towards the leaves
+i don't know why but that's the way it
+is
+okay so there's a key invariant that
+happens within it with a binary tree
+and that invariant is that if i go to
+any particular node
+all the nodes down is left subtree have
+keys that are less than it
+and all the nodes down its right subtree
+have keys that are more than it
+and we can of course use that to be able
+to find
+an item so suppose i want to find
+number 36 well what do i do
+well first of all i go to the root note
+and say
+is 36 greater than 33 yes it is so i'm
+going to go that way
+is 36 greater than 47 no it isn't so i
+go left
+is 36 greater than 38
+no so i'm going to go left and now i've
+found 36.
+and so you can easily see that in a
+binary tree
+the number of nodes doubles with each
+additional set of children we add to the
+tree
+and so pretty easy to see then that
+the computational complexity of
+searching a binary tree
+is going to be order log n
+which is exactly the same as if we were
+going to do a binary search
+now what about adding items into a
+binary tree
+unlike a list it's actually pretty
+efficient we can easily add items into a
+binary tree
+suppose we want to add the number uh 12
+to our binary tree okay well we do the
+same thing as if we were going to look
+up 12.
+we start at the root 12 is less than 33
+12 is less than 15 12 is greater than 10
+and 10 this particular case doesn't have
+a child on that side
+so that's just where we add 12 we create
+a new node to store 12
+and we modify the right hand child
+pointer of 12
+of 10 to point to 12 and then we're done
+and so addition into a binary tree
+is also order log n
+which is great we now have a data
+structure that is keeping our data
+sorted
+we can add to it in order to log in and
+we can
+find an item in order login
+okay so hopefully that's reasonably
+clear how that's supposed to work
+but what does it look like in code so
+maybe we should find out
+so let's there it's a new python file
+for
+our tree now where are we going to get
+started
+well what we're going to do is do pretty
+much the same thing we did with our
+linked list we're going to define
+a new class effectively a new data type
+which is going to hold the key value
+pairs of our tree
+and it's also going to hold the links to
+the children of the node so
+a new class and we'll call it tree node
+and the first thing we do when we find a
+new class
+is to define how do we initialize a new
+instance of this class how do i create a
+new tree node
+and we do that using the init function
+and like all functions or methods
+on a new class it has to take a
+reference to itself in order to be able
+to
+talk to its own functions and its own
+variables within the class
+so that will take a reference to self
+and we want to be able to initialize it
+with a key and a value
+like that okay
+so we'd better store the key in the
+value that's the first thing we need to
+do
+self dot key is equal to is equal to key
+and self.value
+is equal to value all we're doing there
+is storing the parameters
+in our new instance of our tree node so
+that we can get
+them later now as this is a new tree
+node it's not yet been linked into the
+tree
+then we also need to set the left and
+right
+children to be none because it doesn't
+have any children yet
+so self dot left
+is equal to none and
+self.right
+is also equal to not
+okay so we can create new tree nodes but
+if they just sit by themselves they're
+not very useful
+so the first thing we want to be able to
+do is to add
+more tree node into a tree so
+how we're going to do this well suppose
+we've already got a
+a tree node and we want to actually
+add another node onto it
+so let's just for example think that the
+three node we already have might be the
+root node
+and so what we're going to do is to add
+a new function a new
+method on our tree node to be able to
+insert
+another key value pair another tree node
+somewhere one of the children of the
+root okay
+so we'll define an insert function
+and sort and as always it takes a
+reference to self
+and we'll just pass in a key and a value
+and
+later on we'll actually create a tree
+note to store them in
+so a key and a value
+okay so as when we
+looked on the whiteboard if we need to
+figure out whether we need to store
+this new key value
+on the left subtree or the right subtree
+or maybe we don't have any children in
+which case we're going to need to
+actually create a tree node and
+and then store it directly there so
+first of all let's just check whether it
+goes to the left or the right
+if key is less than our own key
+self.key then it's going to be on the
+left
+so what do we do well do we have a left
+child if we do have a left
+child it's its problem not ours if we
+don't have a left child
+then it's our problem and we have to
+actually create a node and store it
+there
+so if self dot
+left is none
+then we're going to have to actually
+create the node and and store the node
+to ourselves
+so
+n is equal to tree node
+key value so we'll create a new tree
+node
+with the key and value that we want to
+store and now all we need to do
+is to reference that from self.left in
+order to link it into our tree at that
+point
+self.left is equal to n
+and that's pretty much all we need to do
+we've now linked that tree node
+into our tree on the left hand side
+now we're still dealing with the left
+hand side here
+but if self.left is
+not non so else what are we going to do
+well we already have a node on that side
+so we can just recursively call insert
+on that node to insert it further down
+the tree
+we don't need to actually deal with
+ourself we can pass the problem onto
+onto that tree node and it's now its
+problem
+so self.left dot insert
+key value
+and then that left node will get called
+with its
+insert method and it will go through
+this process all over again and insert
+it there
+and that's it for if the key is on
+the left hand side now the other option
+of course is it's on the right hand side
+so we need another else to deal with
+that
+now pretty much we're going to do the
+same thing again so
+we'll copy and paste that code
+and it's going to go on the right
+so in this case if self.self.right
+is known then we'll put it on the right
+and that's actually it that's all we
+need to do to insert a node that use of
+recursion
+is quite simple and elegant here so
+let's look at what that does again
+we call insert with a key and the value
+and the question is does it go on our
+left hand side
+if key is less than self.key it goes on
+the left
+now do we already have a child on the
+left if we don't
+then we need to create that neutrino to
+store the key in value
+and link it on our left hand side if
+there's
+already a left child then we pass the
+problem onto them
+self.left.insert key value
+on the left node call the insert method
+and similarly if the new node needs to
+go on our right hand side
+it's basically all the same stuff but on
+the right hand side
+okay so now we've got a way to get data
+into our tree
+we'd also probably better add a way of
+getting data back out of our tree
+so what should we do is code a a find
+function that we can use to search by
+key and get back the node that the data
+is stored in
+okay so let's start def
+i'm going to call find um
+it takes self so we can actually refer
+to
+the the fields of the tree node itself
+and it takes a key which we're going to
+look for
+okay so the three cases we need to deal
+with
+the first case is where the key is
+actually the key of this tree node
+in which case great we're done
+second case is where the key is on the
+left hand side
+and the third case is where the key is
+on the right hand side so we're going to
+need to deal with each of these cases
+separately
+so if key is equal to self.key
+then the key is our key so we found the
+right node let's just return the node
+now the node here we need to have a way
+of referring to it and that no
+the node that we found that our own node
+in this case is
+self so we're just going to return self
+and that will return this particular
+tree node
+okay so what happens if it's the wrong
+key it's not our key
+well then we're going to actually have
+to look on the left or the right so
+if key is less than self.key
+then it's on the left so what do we do
+well there's two possibilities now
+one is that we have a node on the left
+there is a left child
+and the other possibility is there isn't
+one
+so what happens if there isn't one if
+self.left
+is not then what
+well we could return an error here or we
+could just return
+none now with some kind of a key
+value data store like this it's probably
+going to be pretty common that we'll
+actually try to look something up and
+find that it's not there
+and so it's probably better to return
+none than to actually raise an error in
+this case
+so we'll do that we'll return not
+it means that whenever anybody wants
+users fine they'll have to check to see
+whether we gave them none
+but that's probably cleaner than
+actually returning an error
+otherwise there is a left child so what
+are we going to do we're going to pass
+the problem to them we're going to tell
+them to find the correct node
+so our left child is self.left so
+self.left
+and let's call find on them with the
+same key
+and they can go away and search for the
+right node as well now when they find it
+they're going to return it so
+we had them better take that value and
+return that back
+up and so this is a nice little
+recursive use of find it's going to keep
+calling fine i'm fine i'm fine going
+down child child
+child until hopefully it finds what
+we're looking for or it finds that
+there's
+definitely not there and that's
+basically it for the left subtree
+the other possibility is it's on the
+right hand side
+and code's identical to this so we'll
+just cut and paste that
+except we need to replace left with
+right
+so soft right is non now then we'll
+return on
+otherwise we'll return self.
+self.right.find
+and that's it that's all the
+possibilities
+and let's just check so if the key is
+our key
+we're going to return our own node if
+the key is not our key
+then either it's on the left in which
+case we'll return non
+if there isn't a child on the left or
+we'll return
+whatever the left child gives us from
+the find
+the key is bigger than self.key
+then hopefully it will be on the right
+hand side but if that's none then we'll
+return none
+otherwise we pass the problem to our
+right hand child get them to call find
+and return whatever they found okay so
+that's a nice little recursive
+implementation of find
+now why am i returning the node because
+actually i'm going to use this as a
+building block for some other things a
+little bit later
+and therefore if we want to get the
+value out we're going to have to
+explicitly extract it from that node
+okay so that's it for adding and finding
+but
+like all code if we haven't tested it it
+probably doesn't work
+so we should add a little test for this
+as well test
+add find
+and what are we going to do well first
+of all let's create a tree node
+and we'll give it the the key of 10
+and a value of 10.
+um and then let's insert so we will
+insert so insert one on the left and one
+on the right
+we'll insert the value five
+on the left with a key of 5 value
+and we'll insert
+say 15 on the right
+okay so now hopefully if our code is
+working we've got a tree with a root
+node that has the
+key of 10 and we've got two children and
+so
+why don't we just check and find whether
+that actually works
+so node is equal to
+tn.find let's
+look up five
+and we should assert that actually we
+found it
+so node.key is equal to five
+and no dot value
+is also equal to five
+and let's do the same thing but we'll
+look up
+the one on the other side as well we've
+got 15
+15 and
+so that's tested both the left and the
+right subtrees with
+insert and the left and the right sub
+trees we find it's not really a very
+comprehensive test suite but at least
+it's checked
+all of that so the question is does it
+work
+and it does so miracle of miracles we
+actually got the code right
+first time well actually i have to admit
+i tried it before
+but it worked this time
+okay so that's
+adding and creating a node and
+inserting a node and finding a node in
+there
+now what else do we need to be able to
+do well
+one of the main purposes of a tree like
+this
+is to be able to add and delete and add
+and delete
+efficiently and then in between actually
+look things up
+and so far we can add but we can't
+delete so we'd better figure out how to
+delete things
+and for that we'd better go back to the
+whiteboard because there's a few cases
+we need to consider here
+just how will we delete a node from this
+binary tree
+well it turns out that there are several
+different cases we need to consider
+the simplest case is when we're trying
+to delete a leaf node
+and all we need to do then is to remove
+the relevant child from the parent
+and the leaf node essentially is gone
+and
+that's done so that's that's easy we
+just set the
+the relevant pointer on the parent node
+to be
+non and we're done the
+second case that we can consider is
+when the node we want to delete only has
+one child
+and if nobody wants to only has one
+child for example
+20 here only has one child 18 again
+this is pretty easy all we need to do is
+get
+the parent node and replace
+the link to us with the link to our one
+and only child
+and then we're also done there and then
+node20 is gone
+now the problem comes when we want to
+delete a node that has two children
+so if we wanted to read 47 then that's a
+bit difficult we can't just promote
+38 up into here because if we do that
+then 38 already has two children and we
+that doesn't work
+and we can't easily promote 51 up into
+here
+because 51 has a left child of 49
+and 47 already has a left child
+so there's no way to to actually do that
+so we need to find
+a different node somewhere in the tree
+in order to replace this node up here
+and so it there's
+basically two nodes that would make
+sense and to replace 47
+and they're the two nodes that are in
+the in the sorted sequence that are
+closest to 47.
+in that case that's 39 or 49 would both
+be reasonable replacements for 47.
+now i'm going to take the left option
+rather than the right option and we'll
+implement that
+so what do we do well first of all we go
+down from 47 we go to its left child and
+say
+find me the right most node that's your
+child and i might have to go down a long
+way if the tree is deep but in this case
+the rightmost child of our left child
+is going to be 39. so we find 39 and we
+say okay we can promote 39
+up to here so if we're going to move 39
+up to there
+then that's fine 39 can come up to here
+now several things we have to do here
+the first thing we have to do
+is to actually delete 39 from the
+existing tree it's got it's got to be
+removed so we go
+we go back down here and actually delete
+it now 39 has got to be a leaf if it's
+the nearest one to this
+it must be a leaf it can't be anything
+else so
+we go and we call delete on this and we
+remove 39
+from the tree okay it's no longer in the
+tree
+but i didn't actually delete the node
+itself
+the next thing we do is we then copy
+47 children to 39 so
+38 becomes a child and 51 becomes the
+child
+and finally we go back to the parent of
+47 and say
+you're right child is now 39
+rather than 47 and at this point we've
+managed to successfully delete 47 from
+the tree
+okay so those are the essentially the
+three cases
+we're trying to delete a leaf node
+that's easy we're trying to delete a
+node that only has one child
+that's easy either on the left or on the
+right and finally we're trying to delete
+a node that has two children
+if trying to learn that has two children
+we go to the left child
+and then find the rightmost child of
+that and we promote that up to replace
+the node
+that we're going to delete we replace
+it's
+it doesn't have any children it must be
+a leaf we replace its children
+with the ones of the node we're going to
+delete and then we go back and amend the
+parent to do that
+and so that's our general strategy for
+deleting nodes
+within a tree now we've got to be
+slightly careful here because our tree
+only links from parents to children
+so if we traverse all the way down to a
+node we want to delete so we want to
+leave 15
+and we then say okay let's delete this
+node
+we no longer know what its parent is so
+when we implement a recursive algorithm
+to do this we're called delete
+15 it says it's not me delete 15 ah
+that's me
+um what that delete function is going to
+return
+is going to be the child that is going
+to replace
+15 and if it turns out that we're
+actually deleting 18
+so we go delete 18 not me delete 18
+not me delete 18 that's me
+then that delete will return none and so
+when it returns we can amend
+the right child here and this delete
+is going to return in fact the 15 is
+still there and so 33 will say my left
+child is now 15 when it was 15 before
+and so we can do that without having to
+to keep track of where we've been
+by just returning the node that replaces
+the existing node when we walk through
+the tree
+in most cases that won't be a change but
+when we actually get down to deleting
+node itself
+then we have a change to apply so that's
+our strategy for applying deletions on a
+binary tree
+okay so now we have some idea of where
+we're going let's actually write the
+code for it
+so we're going to define a delete
+function
+it takes self like all methods on
+classes
+and it's going to take the key to delete
+now this is going to again be a
+recursive function so it's going to
+work its way down the tree and
+what we're going to do here is have it
+return
+the the node that should replace this
+one
+so that when the parent cause delete on
+the child
+then the child if it needs to replace
+itself can tell the parent what to
+replace itself with
+so by default this is just going to
+return self which is when the parent
+can replace the child with same child
+and well that's our case that we're
+going to fall through to if we don't
+actually need to make any changes with
+the parent
+now we've got obviously the three cases
+when we're recursing we haven't yet
+found the node or we have found the node
+we need to do something about it
+so if self.key
+is equal to key and then we found the
+right node
+okay so we're going to delete this node
+the other possibilities are if
+the key is less than self.key
+then it's going to be on the left hand
+side so
+so ask the left child to delete
+well sits on the right hand side
+so we're going to ask the right hand
+side to delete
+okay so that's sort of our outline of
+what what we need to fill out
+now the complicated one is when we want
+to delete the node itself so i'm going
+to leave that and come back to it in a
+minute
+the slightly
+simpler cases are when we just recurse
+down to another node
+and so what we're going to do then is to
+ask the left child to do the delete
+self dot left dot delete
+put it the key
+now in doing so it might actually be
+the left child that needs to delete
+itself
+in which case it needs to return the
+node to replace itself with um or none
+if it turns out that it's a uh it's a
+brief node
+so what we need to do is to do self.left
+is equal to self.left.delete
+and then if the node that actually needs
+to be
+is our left child it will find something
+to replace it with it will turn
+it back up to us and we can modify what
+we reference
+now obviously it's basically the same on
+the right-hand side
+so no great difference there
+i'm not sure to correct my typing
+mistake okay so that's
+dealt with all the cases where we just
+do the recursion
+the complicated part is when we want to
+delete the node itself
+okay so so now we have several
+possibilities
+we have the case where neither
+left or the right actually has any any
+child there so
+we're we're a node that doesn't have any
+children or we could have
+one node and it's on the left or we
+could have one node and it's on the
+right or
+we could have two children and the two
+children cases the most complicated of
+the three cases
+so let's start with the simple case
+first if
+self.left
+is not and self.right
+is none then we have no children
+there we go in which case all we need to
+do is to return
+none so that our parent node can simply
+slot that in
+in place of us and then we're done so we
+can return none
+okay else
+well what are we going to do um how
+about else
+if self
+dot left is none
+now
+if we get to here then we're definitely
+not in the case
+where both the left and the right
+children are not
+so we can just ask if self.left is none
+then must be the case
+that the right child is not none
+so we can just replace ourselves with
+the right child
+so all we need to do is return
+self.write
+and then our parent node can start in
+our right child in place of us and
+that's that's simple
+let's get this correct
+okay so the other option of course is
+it's the other way around
+self.right is none so there is one on
+the left
+so we can slot the left in place of us
+finally both our children
+exist and so what do we want to do
+we want to replace ourself with
+the right most child
+of our left child and so we need to find
+the right most child of our left child
+and replace ourselves with that and then
+delete that node from the tree as well
+so first of all we've got to find the
+the
+rightmost child and for that we're
+probably gonna need to write a little
+additional function
+but let's just see how we use it first
+and then worry about writing the
+function
+so max key is equal to self dot
+left dot max key
+and so that's going to find the maximum
+key on the left hand side
+and then what we're going to do then is
+to actually search for that
+max node is equal to self dot
+left dot find
+that max key
+and then so now we've found the node
+that's going to replace us
+we can actually go and delete from the
+tree
+that node self.left dot delete
+by key that max key
+okay so that will have taken that node
+that we're going to use to replace us
+out of the tree
+now that must be a leaf node
+if otherwise it wouldn't have been the
+max and so
+that's fine um
+what we want to do now is to use
+that node in place of ourself so
+that's what we're going to return but
+first of all we need to set its children
+to be
+what our children currently are
+so max node
+dot left
+is equal to our left child
+self dot left and
+max node.right is going to be our right
+child
+and so we're going to slot that node in
+in place of us
+now it might be a good idea just to be
+sure we haven't messed up to
+put an assertion in here max node
+dot left is
+because this is the sort of thing where
+it'd be very easy to make some mistake
+and end up getting the wrong node and
+putting an assertion in here we'll just
+make sure that we're pretty sure if we
+go
+past this point that we got the right
+node at least it is actually a leaf node
+before we go and overwrite its values
+and make a real mess of things
+okay so what have we done so far we've
+found
+the key of the largest value on the left
+side
+we found the node from that we've
+removed that from the tree
+so that it's no longer on our left side
+now we're going to make its children
+our children because it's going to
+replace us and then we're just ready to
+return
+that node because that's what's going to
+replace us
+okay and that should be enough for us to
+be able to
+actually implement a
+delete function that keeps the tree all
+properly sorted
+before we rush off and write some tests
+though we assumed that we had a function
+that could find the maximum key on the
+left hand side
+and we don't have one so we'd better go
+and write it
+so let's just implement max key
+now that's just going to be a simple
+recursive function
+and basically it's going to keep going
+down the right child until there aren't
+any more
+children and then return the key from
+whatever node it finds
+so if self.write
+is non then it's done and just
+return self.key
+okay as i was saying return self.key
+otherwise then we just need to call
+maxkey
+on the right-hand child and see whether
+it does the same thing
+self dot write
+dot max key
+recall that and then we're going to
+return that
+and that's all we need to do that will
+simply run down the right hand side
+until
+the reaches are nodes that has no right
+child and then when it gets there it's
+going to return the key so
+very quick simple auxiliary function and
+it's quite common in code that you
+actually write these little auxiliary
+functions to help you out
+now i could have put that in line here
+but it would have made it much less
+clear what was going on in
+what is a reasonably complicated piece
+of code here so it's better just to
+break that out in a little separate
+function
+it has its own definition up here and
+and then
+the the main line code is just a little
+bit clearer to read
+okay so as we know we pretty rarely get
+code right first time
+so i've written some tests here to see
+if we can see whether our deletion
+function works
+so what we're going to do is after we've
+added those three nodes 5 10 and 15
+we're going to just check that max key
+works so we'll call max key on tm which
+is our root node
+and check we get 15 and then we'll also
+just verify that the root node is what
+we think it is that it is 10
+and then we'll delete the root node so
+tn.delete10
+replace tm with that and that's the
+the complicated case so that's the case
+that's probably most likely to go wrong
+and we'll assert that after that it's
+done what it's supposed to it's gone
+down the left subtree it's found node
+five
+and replaced the root node with that
+then we're going to delete 15 which is
+down the right-hand subtree
+and check that that does correctly leave
+the root node still there and the max
+key has now reduced to 5
+and then finally we're going to delete
+the one node that's left we need to
+delete the root node itself and
+check that tn is none okay so
+hopefully if we've got anything wrong
+though those tests are enough to reveal
+it
+so let's let's try that
+pie test tree.pie
+and inevitably it doesn't work
+okay so where's it gone wrong it's
+the last test when we delete uh the last
+node
+and it's basically said it found a tree
+node object
+instead of non okay so we've got a bug
+so now i'm going to go through debugging
+this and
+hopefully i get a little bit of a feel
+for how i go about trying to debug a
+problem like this
+okay so i think i'm going to actually
+want to just print a bunch of stuff out
+so the easiest way to do this is to
+actually instead of using pi test
+actually just call that function and add
+some print statements
+and what do i want to do i want to
+actually just print out before we get to
+the insert statement there because we
+know the assert will fail
+i want to just print out what what node
+we were left with
+we should have deleted five what are we
+left with so i'll print out the key
+okay and i want to run python on this
+not pi
+test tree.hi so i get the printout
+okay so we know the assertion error is
+going to happen anyway so i'm going to
+ignore that but what
+the printout before that is five
+so that's interesting we deleted five
+and yet we got 5 still left
+that's a bit strange
+okay we'll probably need to gather a bit
+more information about what the state of
+this node is and things like that
+so how about we figure out whether it
+has any children because obviously
+something's gone wrong in the in the
+unlinking process and maybe
+this node actually has children too
+so tn dot left
+tn dot right
+let's find out whether five is left with
+no children or
+or is everything very messed up
+okay so that's the line we're interested
+in and it says node five
+the right hand child is none but it has
+a left-hand child still
+so obviously we've not only failed to
+the last note but we failed to delete
+its left child as well
+and that's probably a bug
+now what's the best track from here to
+figure out what's going on
+well it would probably be a good idea to
+find out what node it actually has on
+the left
+so let's print that instead so
+cn.f.key
+okay i'm just trying to figure out what
+the state of the world actually is
+at this point it's not what we expect it
+to be so what state is it
+okay print out that and we can see that
+node 5 has a left child which has a key
+of 5.
+that's probably not good
+um node 5 is in our tree twice now how
+does node 5 get into our tree twice
+well the only time node 5
+got copied anywhere was actually back up
+here when we deleted our root node
+so at that point this was when it became
+the root node so is our error back there
+copy this line back up and see whether
+it messed up all the way back up there
+okay so if it did then we'll we'll know
+that we should look in the case where
+we have two children to delete
+okay you can run that and indeed if we
+go
+back up to that point node five which
+had just become the root node
+still had node five as a left child okay
+so now we're starting to get somewhere
+we're starting to figure out
+what's going on so this is the case
+where node 10 had two children
+and so we can go to our code and figure
+out
+we were deleting node 10 and it had two
+children so it's in this
+chunk of code here which of course is
+the chunk we're most likely to get right
+because it's the most complicated
+and so when we deleted node 10
+it replaced itself with node 5.
+so we know that was correct so it
+correctly returned the right max node
+because we've we've already seen that in
+our print statements
+but in somehow doing that the
+the left child which should have ended
+up as none didn't
+so why did the left child not end up as
+none well
+what we did was to call
+self.deletemaxkey to remove
+five from the left subtree and
+what did we do with the return value
+node five would have said please replace
+me with none
+and we didn't do anything without value
+so self.left
+should have been equal to that we missed
+out modifying the left
+tree and so when we copied it into the
+new root node
+node 5 became a child of itself and that
+was where the error was
+okay so hopefully that's enough that we
+can run pi test
+and actually pass the tests
+my print statements are still messing it
+up okay so let's take the print
+statements back out
+and run pi test run pi test
+and we fix the bug okay so you get some
+idea of what i'm doing there
+i know i've got a problem i know i've
+got some unexpected data and i just
+start to dive into it and find out what
+the state of the world is
+and eventually i start to get enough of
+a clue that i can hone in on
+where it went wrong it wasn't at the
+last deletion actually it was much
+further up
+which meant that my test for that
+deletion was insufficient
+and then i managed to figure out what
+was going on at that point
+that five had to become a child of
+itself at that point and that pointed me
+exactly where in my code to go and look
+for where the problem was
+and as soon as i looked in the right
+place and realized what was going on
+it was pretty fast to fix so that's some
+kind of essence of
+what's going on in the debugging process
+so our code now passes those tests so
+we're starting to get a little bit of
+confidence that maybe it actually is
+correct
+um but we're not done yet because
+right now all we have is an
+implementation of a tree node
+and that means that anybody who uses our
+code has to do a lot of messing about
+with managing tree nodes and we want to
+hide
+all of these tree nodes from them we
+just want to implement a binary tree
+class
+that hides away how things are stored
+hides away
+the messing about with the nodes
+themselves all we want to be able to do
+is to
+add keys and values and to be able to
+look up things by keys and value and so
+forth
+so to do that we're going to have to
+hide all the tree nodes
+and the root node and everything else
+behind a new class a binary tree class
+so let's get started on doing that
+so class binary tree
+okay now like all classes we're going to
+need to have
+a an init function to initialize the
+state
+and our binary tree doesn't really take
+any particular
+state other than it needs to just
+create an empty root node
+if we actually try to muck about with
+with tree nodes by themselves
+then the user of this is going to have
+to maintain whether there is or isn't a
+root node
+when the when the tree is empty and we
+want to hide all of that from them
+so start off with your self dot root
+is equal to non because when the tree is
+empty there is no root node
+okay now we want to provide a
+programming interface an api for our
+users of this class
+so what are we going to do we want to
+have the class have an insert function
+and that's basically the same as the
+insert function for the keynote but now
+it's on the tree overall
+so i'm going to have that um
+and so we've got that will insert a key
+value
+uh key value pair value a pair
+uh what are we going to be able to do
+we're going to need to be able to look
+up a key and get back a value
+previously for trino's we've implemented
+this find function it gives us a node
+back but that's
+that's not really what we want here so
+we're going to need a lookup function
+and that's going to look up by key and
+so look up um
+value by key
+and we're gonna need a delete function
+and that's going to delete by key
+okay so that's
+basically the the sort of the start of
+what we're trying to do here we're going
+to actually
+implement this api which will hide all
+the mess of tree nodes behind it
+so the
+insert function there's it's really
+it's just mostly going to use the tree
+nodes inside function but
+you can't do that when we don't have a
+root node
+so we're going to just check whether we
+have a root node
+if we don't have a root node then we're
+going to have to actually create one
+and use that to store our key value so
+we're going to create one we need to
+create a tree node
+and the tree node just takes the key and
+the value
+and once we've created it we'd better
+store it somewhere
+and that becomes our new route
+okay otherwise what we're going to do
+we're we've already got a root node so
+all we really need to do is call the
+insert function on the root node to
+insert this new key value we've already
+done all the hard work for that
+so that's self.root.insert
+key value ask the root node to do the
+job for us
+and that's all we need to do for insert
+there's nothing else um
+either there is no root node in which
+case we're going to create one
+or there is a root node in which case
+it's it's the problem of the root node
+to solve this
+lookup is also pretty simple here what
+we're going to do is we're going to call
+find on the root node but there might
+not be a root node
+so again we're going to just check
+whether
+there is actually a root node if there
+is no root node
+then we're just going to return none
+if it is a root node then we
+need to call find to get the note root
+to get the correct node so node is
+equal to self.root
+soft.root.find
+key and
+that node might be non if the key
+doesn't exist
+or it might actually be the node in
+question
+so we can't just go and extract the
+value from that node without checking
+first whether the node actually exists
+so if node is non
+then we can't go and get the value out
+of it so we're just going to return on
+else node is not non in which case we
+want to extract the value for it and
+return that
+again we have to always make sure that
+we've we've checked
+whether the nodes are non as we as we do
+the lookup otherwise we're going to
+end up with a runtime error if we tried
+if we got this node
+from find and then try to extract no
+drop value from it a node happened to be
+non
+we get a runtime error here and that
+would cause the the code running this to
+crash
+okay so that's that one and finally
+delete now this is really
+pretty simple um except again we're
+going to actually have to check
+that there there is actually a root node
+before we call anything on it
+so if soft dot root is none
+we're just going to call return we don't
+have to return any value we just don't
+want to be dealing with this problem
+anymore
+else self.root
+dot delete on the key
+and it's really the problem with the
+root node it can do all the deletions
+but we've got to be careful here same
+bug i had before
+if i just called a delete on it and
+there was only the root node left
+we would leave the root node behind so
+self.root
+is equal to self.root.deletekey most of
+the time
+that won't change the root but if the
+root node was the last node
+then that will end up deleting the root
+node
+self.root.delete would then return none
+and so the root would get set to none
+and then we'd have
+back with an empty tree and everything
+would be all consistent again
+and so that's really our api that we're
+going to use
+to hide a binary tree behind
+okay i'll write some test code to make
+sure all that's correct
+but there's one more thing we might want
+to do
+the great thing about a binary tree is
+it storing all of our data sorted
+and because the data is sorted we might
+want to actually extract it
+in the sorted order and so probably we
+actually want to have some way of
+generating all the items in sequence
+out of our tree for whenever we want to
+go and walk through the data in the
+in the correct sorted order so we can
+get the first one out
+so let's go back to the white board and
+think about how we might do that
+[Music]
+so how are we going to traverse this
+tree
+to get all of the items out in their
+sorted order
+well that's actually fairly simple we're
+just going to start at the root
+and we're going to go down the left tree
+we go down the left tree
+and we go down the left tree until
+there's nothing more on the left
+then we're going to return the item
+itself so this is the first thing we'll
+return
+and then we'll go down the right tree
+and we'll go here
+and this is the second thing we'll
+return and then we come back
+up and we come back up and now we're
+going to return
+15 and now we'll go down it's right
+subtree
+to here and now we'll return 18
+and so on we'll come back up we'll come
+back up now we return
+the root so that's number five now we go
+down it's right subtree
+and now we start down the left subtree
+from there left
+left okay we can return that now number
+six
+back up that one will be number seven
+down it's right subtree but it doesn't
+have one
+so we come back up down it's right
+subtree
+go left now we get to return number
+oops we missed one out when we came
+through there that was eight
+now we get to return number nine we come
+back up
+return ten we would go down it to write
+subtree but there isn't a right subtree
+and then we pop back out and we're all
+done so that's the order we're going to
+go through and traverse our tree
+now how we're going to do this in python
+well let's just have a look at what
+happens
+when we're generating a range and we're
+iterating over that
+and that will give us some clue as to
+what we're going to do here
+now to explain what's going on here i
+need to give you a simple example that
+you've already seen before
+so what we've seen is is writing things
+like a for loop for i in
+range 0
+to 2
+print i
+and so what this will do is it will go
+through this
+loop repeating the print statement and i
+will start off with zero
+and then the next time through i will be
+one and
+finally it won't come through the third
+time because this only goes up to
+one less than nothing there now this is
+similar to if we'd implemented a list
+here
+we could have implemented a list with
+zero and one in it
+and then we could have iterated across
+the list but that's
+not how range works range never
+generates the list
+it only generates them one at a time and
+this makes a lot of sense
+if instead of going up to two
+we go up to something really really
+really big
+in which case now generating the whole
+list
+first and then getting things from it
+might be unnecessary because for some
+reason our loop might terminate after
+the first thousand
+but in the worst case it may go up to 10
+million in which case it makes no sense
+to generate the whole list
+and then and only then actually iterate
+through the list
+so a generator will be lazy it will only
+generate
+the items in this range as we consume
+them with the for loop
+and so we want to do the same thing when
+we implement
+traversing the tree for our
+binary tree we're going to each time
+through we're going to generate
+a node and so what we want to be able to
+do
+is write for
+key value kv in
+tree dot walk
+and that's what we want to be able to do
+and then you need to do something with
+key value like printed out
+and what walk is not going to do is to
+generate the whole
+sorted list what it's going to do is one
+at a time
+generate the items out of our tree in
+the correct order
+now we know what the correct order is
+but how do we actually generate them
+and python for this has a keyword which
+is yield
+and so what we have is a function here
+that will go through until it finds the
+first one that it wants to return
+and then it'll yield that particular
+value in this particular case it will
+yield
+self.key
+self.value as a pair
+as a tuple and that will pass it out and
+we get here
+and so each time we get to the node and
+want to yield itself
+we can we can do that now we can write
+then code that goes in
+and traverses the list in the order we
+we explained
+but each time we want to return a value
+from it we call yield
+and yield is just like return except for
+the next time we come back in again
+iterating through here it'll come back
+in at the place where it left off
+and then we can also use yield from
+where we don't actually want to yield it
+right now but the code we're about to
+call
+is going to actually do that and so we
+could do that we could do
+from some node
+dot walk and we can walk that node and
+later on that node will actually call
+yield to return the value
+so as i say yield behaves very similar
+to return
+except for you're not done yet you can
+come back in coming in the next time
+through the loop
+and the code will resume exactly where
+it left off to go and get the next
+version
+which is a pretty neat feature of python
+so
+let's have a look how that works in
+actual code
+[Music]
+okay so so now we have a rough idea of
+how
+generators work and a rough idea of how
+we're going to walk the tree
+we should actually write the code for
+walking the tree
+so first of all we need to add a a walk
+method to the tree itself now this is
+not really going to do very much
+other than just check that we actually
+have a root node
+and so if self.root
+is non then we're not going to do
+anything because there aren't any items
+to
+to return from our generator otherwise
+we're going to yield the
+next item in the sequence so each time
+you get one more as we go through
+so we're going to yield but we're not
+going to yield it from here we need to
+yield it
+from the uh the root nodes
+walk function so self.war self.root.walk
+okay and self.root.walk will actually do
+the yielding
+but when it yields then this will pass
+it back out
+so makes it a generator
+okay so now we need to actually do the
+work within tree node itself and that
+needs its own walk method
+so let's go down and add it to the end
+of our
+methods in the class okay
+so this is going to starting at the
+existing node we're going to go and walk
+the tree
+and if you remember we just walk the
+left hand part of the tree
+then our node and then the right hand
+part of our tree
+so first of all we just need to check
+whether there is anything on the left
+otherwise we can't yield from it so
+self.left is
+not non then there is something there
+so we'd better go and yield from it
+yield from self.left
+dot walk we'll let the left
+tree node deal with actually yielding
+the data
+after we've done that we need to come
+back and yield
+the data from our own node because
+that's before the nodes on the right
+so we need to yield and we're going to
+yield
+a a the key value pair as a tuple so
+under yourself dot key
+put this in brackets to force it to be a
+tuple
+self.value and so that will actually
+when we get back to our node we will
+yield the
+the key and the value that are stored in
+the node itself
+and finally we need to go and yield from
+the whole right hand part of the tree
+so if self.write
+is not non then yield from
+self.write.walk
+okay so that's how we would actually
+go and walk through all of the nodes one
+by one in the tree
+in the correct order we should probably
+just test it
+i wrote a little test function earlier
+for this and
+that's down here that's this test test
+walk so
+i created a list of items these are
+going to be
+keys and values in each just use the
+same number for each because it's easy
+for a test
+i'll create a binary tree and then i'm
+going to do
+4k v in items so this is going to
+essentially walk through that list
+giving me first of all 10 10 then 5 5
+and so forth
+and for each of those we're going to
+insert it into our binary tree
+once we've got all of that data nicely
+stored in our binary tree
+i'm going to call items.sort and that
+will sort this list of items into
+numeric order
+then i'm going to set a list to be empty
+and i'm going to now
+actually test our code so now we'll do
+for kv
+in t dot walk and this will walk
+our binary tree returning
+each time through this loop one more
+item in the correct sorted order we hope
+if we got our code right
+so that means that kv will hopefully
+start out as
+one one and the second time through kb
+will be five five and so forth
+as we go through and walk through our
+binary tree
+so we'll append those key values onto
+our extracted list
+and then at the end we'll check that the
+extracted list
+is the same as the sorted set of these
+items
+and that should demonstrate that first
+of all we managed to walk the tree and
+get all the items out
+and secondly that they're actually in
+the sorted order
+okay so let's test that
+and the test passed so we are correctly
+getting all the items out of our tree
+now
+so that's pretty much all there is to
+implementing binary trees this was a bit
+more involved than the previous data
+structures because
+we we have to implement a tree nodes and
+the special case is there depending on
+whether
+the left subtree or the right subtree
+are non and we have to deal with all of
+those special cases each time
+and then because this is a sort of data
+structure we also want to be able to
+extract all that data back out of it in
+sorted order
+and that's where these generators we've
+just written for
+for walk come in and that will let us go
+through and extract all the data out of
+it in sorted order
+okay so that's a full implementation of
+a
+binary tree in python
+[Music]
+now we've seen that binary trees have
+really great performance for insertion
+insert into a binary tree is going to be
+order log n
+deletion from a binary tree is the same
+order log n
+searching binary tree lookup
+is order log n
+and we can also walk the tree and we can
+walk the whole tree
+in in order n which is
+the best you're going to do because
+you've got n items to walk
+now this makes some assumptions
+the trees we looked at so far basically
+are a bit dependent on the order of the
+insertions and the deletions
+if we insert and delete random data
+then roughly speaking half of the data
+will end up on each side
+and the tree will be balanced and things
+will not be a problem
+but what happens if we add data in order
+so we start off with node one and then
+we already have some sort of data so we
+add node
+two and then we have node three
+and then we have node four and then we
+have node five
+you can see what i'm getting at so now
+i have five nodes in here and
+if i want to add node six it's going to
+be order n
+if i want to delete node five it's going
+to be order n if i want to look up node
+five it's going to be order n
+and so in this particular case because i
+inserted the data in sorted order
+already
+then the performance of my nice lord and
+login
+binary tree has degraded to look just
+like a linked list
+and so suddenly my tree isn't so nice
+anymore
+now this is not something that is
+inherently a problem with trees but it
+does mean that
+the process of inserting and deleting
+from a tree is not quite as simple
+if your data might actually have
+structure to it
+they do it random you probably don't
+need to worry too much but if the data
+has structure to it
+like you've added them in the right
+sequence you probably have to actually
+rebalance the tree
+and so you do that by essentially moving
+where the root is in the tree and so in
+this particular case you would you can
+basically rebalance the tree and move
+the root
+to three and then you can rebalance any
+sub trees within that and so forth
+and so long as you do this one step at a
+time
+while you're building the tree you can
+do that with actually negligible
+additional cost
+now that's a little bit more of an
+advanced topic and so i'm not going to
+deal with it on this course
+but you should see that on your
+algorithms course instead
+so that's just about it for this episode
+what i've taken you through
+is the whole process of building binary
+trees
+from the concept all the way through to
+implementing the code
+now i appreciate there's quite a lot of
+coding we've done in this episode
+and it might be difficult to take all of
+that in one go so all the code will be
+on github
+and i encourage you to actually just go
+through it and think through for
+yourself to make sure that you actually
+understand the concepts and
+how we've actually implemented them so
+why did i actually take you through
+quite so much coding well
+the main reason for doing that other
+than the fact that i actually want to
+show you how binary trees work
+is because i'm hoping that by talking
+through the process as i'm coding
+some of the concepts and the ideas that
+are going on in my head as i'm coding
+will make it into your head by osmosis
+now
+i also left a few of the bugs in so that
+you could actually get some idea of well
+first of all the fact that my code isn't
+bug free either
+and secondly the the way i'm thinking
+about gathering information when i'm
+going through that debugging process
+okay so binary trees i think are one of
+the most useful data structures in
+computer science
+i've used them many many times over the
+years and they come up all the time in
+computer systems
+so i hope that's been interesting and
+useful for you see you next time

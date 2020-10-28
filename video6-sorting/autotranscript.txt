@@ -1,0 +1,1547 @@
+welcome back everyone
+
+last time we looked at a number of algorithms including binary search.
+now binary search relies on the data that you're trying to actually
+search being sorted and we didn't really discuss last time how you
+actually make sure that the data is sorted in the first place.  so
+that's what we're going to look at this time. let's get started.
+
+i'm going to use these cards to illustrate some sorting algorithms.
+let's just deal them out i'm only going to use eight cards just to
+keep things simple.
+
+what's the simplest algorithm we could reasonably use to sort these
+cards?
+
+well how about we go through and we just compare each cards pair by
+pair and if they need swapping then we'll swap them and if they don't
+need swapping then we won't.  we'll compare the three and the seven
+and they need swapping.  we'll compare the seven and the four and
+we'll swap those.  and we'll swap and we'll swap and we won't swap and
+then we'll swap and we'll swap.
+
+okay so i've gone through and i've done n minus one comparisons, seven
+comparisons and one card has bubbled its way up to the top.
+
+but we're not done yet so we need to go through again. compare compare
+swap compare swap compare and swap. okay so now we've done two passes
+through the cards and the two largest cards have bubbled all the way
+up to the top.
+
+we're not done so we'll carry on again.  we compare: those need
+swapping, those don't, those do, those do, compare compare. Okay so
+now we've done three passes through the data and the top three cards
+bubble the way to the top. you can see why this algorithm is called
+bubble sort, because the largest card bubbles through to the top on
+each round.
+
+okay so we'll swap, compare, compare, swap and we're nearly done but
+not quite.  we have to go again. good, good, swap, and all the rest of
+them are good.  one more round: they're good, we swap, and keep going
+one more round and then everything up there is good.
+
+okay so that took us n rounds because each time one card got to the
+top and it took us n minus one comparisons in each round.  so the
+computational complexity of this bubble sort algorithm is O(n * (n -
+1) which is order O(n^2). now O(n^2) is not a really great complexity
+for an algorithm like this. O(n^2): if we have a thousand items it's
+going to take us order a million item million comparisons in order to
+sort them.  That's not really great, can we do better than that?
+
+here's a visualization of bubble sort sorting 16 numbers using colors
+to illustrate the numbers.  you can see how the number 15, the largest
+number, bubbles its way straight to the end of the list in one round,
+whereas number 0, the smallest number, takes all 16 rounds to get to
+the beginning of the list.
+
+here's a similar visualization showing bubble sort sorting 64 numbers.
+now one thing to note here is this great big triangle region here.
+nothing much happens in that triangle and the reason nothing much
+happens in that triangle is because when you've got to pass k across
+the data, the last k minus one items have already been sorted.
+
+this suggests an optimization for us: once we're going through these
+passes later on in the data, we don't need to run through and compare
+all the way to the end. we can just stop when we've got to the last
+item that still needs to be looked at, and not bother with doing the
+rest.  now is that going to actually improve the performance?
+
+well, yes it will, because we'll actually have to do only half the
+number of comparisons we did before.  but will it change the
+computational complexity? well, no, because it's still O(n^2): we're
+just doing half of n^2 rather than n^2 and that actually doesn't
+change the computational complexity. it's still going to scale
+relatively poorly as we scale to very large numbers so what else can
+we do?
+
+so here's an observation that might be
+useful how many operations does it take
+to merge
+two lists that are already sorted so
+here i have two lists that are sorted in
+correct order already now if i want to
+merge these all i need to do is to
+compare the first ones from the list
+i can take the eighth then i can compare
+the next first two i can take the two
+and i can compare the next two i'll take
+the 3 and then the 4
+and then the 5 and then the 6 and then
+the 7 and finally the 8.
+so i can merge two lists of n items in
+only n operations n copies in this case
+so that's the first part of our
+sort algorithm that might be useful now
+there's another piece of the algorithm
+that we need to think about
+here are the cards or randomly shuffled
+now what i'm going to do
+is i'm going to treat these not as one
+list of eight cards but it's eight lists
+of one card
+now why would i do that well it turns
+out that
+fairly obviously lists of length one are
+already sorted
+and we can use that as the basis for our
+algorithm
+so what i can do now is i can take these
+lists and i can
+do mergers on these this i can merge
+this pair of lists i'll take the two
+and then the seven then i can merge this
+pair of lists so i'll take the ace
+and then the five convert this pair four
+and then the six
+and i can merge this and this okay so
+i've
+done one round of merging and now i have
+lists of length two
+but i can repeat the process so i can
+merge this pair of lists i can take the
+ace
+the two the five and the seven and i can
+merge this pair of lists
+three four six and eight now to two
+rounds of merging i now have lists of
+length four
+and finally i can merge my remaining
+pairs of lists
+if you take the ace the two
+three four five
+six seven and eight
+and now i have one complete list that's
+already sorted
+okay so each of those merging rounds
+takes n operations
+but how many rounds are there well the
+length of the list started at length 1
+and then two then four and then eight so
+it's growing exponentially
+which means that the number of rounds i
+need to merge
+n cards is going to be log n so the
+total computational complexity of this
+algorithm
+which we're going to call merge sort is
+order of
+n times log n or n log n
+now does it make much difference if i
+use
+a algorithm with order n squared
+complexity or
+n log n complexity well yeah it does
+but only if n is large if i'm sorting
+lists of length
+eight here it really doesn't make much
+difference whether i use merge sort
+or whether i use bubble sort but if i'm
+searching lists of say length a thousand
+then a bubble sort is going to be
+something like a million operations
+whereas the merge sort is going to be
+something like 10 000 operations
+and if n gets much bigger than that then
+the difference just keeps
+getting wider and wider the larger n
+gets and so it can really make a big
+difference to the performance of your
+software
+paying good attention to the
+computational complexity of the
+algorithms
+now can you do better than order n log n
+well it turns out that for a
+comparison-based sort
+you can't order n log n is the best you
+can do for a comparison based sort
+now there are a number of different
+comparison-based sort algorithms
+i've shown you merge sort but there's
+also quick sort and insertion sort and
+so forth there's a bunch of other
+algorithms
+and in the real world the the constants
+will also start to matter so all of
+those algorithms are order n log n
+but the the constants in the algorithms
+can also be different
+and so depending on what you're trying
+to do one algorithm might be better than
+another for
+a particular set of circumstances
+here's another visualization showing
+merge sort now
+sorting 64 items as you can see it only
+takes six rounds
+to sort 64 items
+and here it is sorting 512 items it only
+takes another three rounds to go from 64
+items to
+512. so that's big improvement in
+efficiency
+and i also think it looks quite pretty
+too
+[Music]
+now we know how the merge sort algorithm
+works it's time to actually implement it
+in python
+so let's fire up an editor and
+get typing
+okay so we're going to write merge sort
+function um we'll call it merge sort
+for obvious reasons and it's going to
+take a list as a parameter
+now before we rush ahead we probably
+need to do a little bit of thinking here
+the first thing we should probably think
+about is how we're going to test this
+we're going to make sure that we
+cover all the possible cases so
+let's write our test first
+we write a test for merge sort now what
+are we going to feed it as test data
+there's kind of a truism in mathematics
+and computer science as well
+that there's really only three lengths
+of things there's lengths of zero length
+of one and length of
+infinity or at least some number larger
+than one
+um and so we really need to test those
+corner case we need to test
+an empty list we need to test for a list
+with only one element in it and then we
+need to test with
+lists that are a large number of
+elements so let's start with
+the those corner cases because they're
+the ones that are really easy to get
+wrong
+very easy to miss out what happens when
+for example the list is empty
+so if we merge sort of an empty list it
+should produce an empty list
+we'll assert that that's true
+and the other one that's really easy to
+get wrong
+is the other corner case if there's only
+one element in the list and so we'll
+assert that that's true
+now what about some longer lists
+well the first thing we need to think
+about is how long does the list need to
+be in order for our algorithm to be
+properly tested
+and given that we know that merge sort
+starts with a list of length 1
+and then merged into length 2 and
+emerges the length four and so forth
+we need a list it's at least long enough
+to test that multiple rounds of merging
+so we might for example
+test a list of length four which means
+that at least two rounds of merging are
+taking place and we've tested that part
+of our code
+now it's a good idea to test that when
+the list is already sorted we don't mess
+it up
+that's also kind of another corner case
+and the other
+obvious thing to test is when it's in
+reverse order
+now those two cases use lists of length
+four and four is obviously a power of
+two
+and so the the lengths divide nicely
+down into successive divisions of the
+list
+but we're very easy to miss the case
+where maybe the list is not a power of
+two and so we really ought to test that
+that also works
+so let's add one more case
+for a list that's not a power of two
+okay now that's not a really
+comprehensive test suite but at least it
+covers the main basis
+and so if it passes this we'll have a
+pretty good idea of whether the code is
+basically working if you were developing
+a
+more complete test suite we'd probably
+test with much longer lists and things
+like that but this is a good starting
+point
+now what next well we need to think a
+little bit about how we're actually
+going to code merge sort
+itself there's obviously two parts to
+the merge sort algorithm
+there's the merging of lists and
+there's the dividing of your list down
+into successively smaller lists before
+you can merge them back up again and so
+this means we're probably going to end
+up having not just the one merge sort
+function
+but we need to actually also implement a
+function that will merge lists
+and what this will do is it will merge
+two sorted lists
+okay so i think we need to now know what
+we need to implement but the next
+question is
+how do we need to implement it and
+for this we probably ought to step away
+from the computer for a second and
+actually give a little bit of thought
+to how we're going to actually write
+this because i can think of a whole
+bunch of different ways of writing it
+and some of them are better than others
+so let's do that let's step back from
+the computer for a second and give it a
+bit of thought
+okay so let's think first about how
+we're going to implement our merge
+function
+now what are we doing we know we've got
+two lists of items that we need to merge
+there are two lists and let's say this
+one has one as its first element and
+this is two as its first element
+and what we want to do is to copy them
+into
+what is currently an empty list over
+there so that's easy enough we compare
+one
+and two and we decide that we want to
+append one to the end of this list
+now we know from last time that
+appending to the end of a list over here
+is not a problem that's going to be nice
+and efficient but
+once we've appended over here what do we
+do to the original list
+now the obvious thing to do is to remove
+this item from the front of the list
+but recall last time deleting from the
+front of a list can be really pretty
+inefficient
+so we probably don't want to do that so
+what other options do we have
+so if we can't delete from the front of
+a list maybe we can delete from the back
+of the list
+there's nothing that stops us taking our
+our list to be sorted
+and and arranging them the other way
+around so that the lowest elements are
+at the end of the list
+and so when we compare one and two and
+decide that we need to
+append one over here that's no problem
+we can delete from the end of the list
+just fine
+okay so now the next element in there is
+three for example let's compare these
+two lists what we need to
+to move to so we can remove it from the
+end of here just fine
+but now we have an issue over here we
+can't append to the end of the list
+because that would have it in the wrong
+order so we would have to prepend to the
+list
+and unfortunately adding to the front of
+a list is just as expensive in python as
+deleting from the front of the list we
+still have to shift all of the elements
+up
+so that's not going to work either so we
+need a different solution
+so what are we going to do well let's
+put our lists around the same way they
+were originally
+so with the lowest items at the front
+now if we can't delete from the list
+maybe we can just keep track of where in
+the list we are
+so maybe we keep track of the fact that
+we're on the first item here and we're
+on the first item here
+and so when we compare these two items
+we discover that we need to move one
+over here no problem we can append it
+over there just fine
+and now all we need to do is to move
+where we keep track of to here let's say
+that's a 3.
+now we can compare these two and we
+discover that the 2 is the lowest
+so no problem we can append 2 over here
+and we're just going to move to the next
+item
+we need to copy 3 over here
+we do that by keeping track of the fact
+that
+we're on the next item in turn and so
+we're no longer actually deleting from
+the list over here at all
+we're just going to keep track of where
+in the list we are
+how many we already dealt with and if we
+do that then we won't have a performance
+problem because if you remember from
+last time
+indexing into a list is a really cheap
+operation no matter where into the list
+we index
+and when we finally got to the end of
+the list we can get rid of those lists
+and keep just the merged one
+and that should give us good performance
+now as we're going through these lists
+over here we need to consider the
+different possibilities
+so what are the possibilities well the
+possibilities are
+that we've got to the end so both lists
+are empty
+and we'll use that to decide that we
+need to finish
+what other possibilities well if we've
+got list 1
+and list 2
+we could have that list one is empty
+but not list two or we could have list
+two is empty
+but not list one or we could have
+neither list is empty
+okay and then of course the two
+possibilities when neither list is empty
+we want to take from list one
+or we want to take from list two
+and so when we write our code we've got
+to make sure that we consider all of
+these possibilities every time we want
+to try and take elements from these
+lists
+because otherwise we will end up with
+code that doesn't actually handle some
+of the special cases
+so there are essentially five different
+possible cases here and we're going to
+have to write code to make sure it
+handles all five of those
+okay i think we're finally ready to
+actually write some code
+okay so first of all we need to create a
+list to store
+our results in that's our merge list and
+that's going to start off empty
+and when we're all done we're going to
+return that return
+merged list
+as the result of our merge function so
+that merge sort can use it
+now what we're going to do next the
+first thing we need to do
+is to initialize our indices into the
+lists
+so that we know how far through we are
+because we're not going to actually
+delete from those lists
+so it's called index one to be zero
+and we're going to similarly index two
+will be zero
+now we're going to have quite a lot of
+conditions in
+uh if statement they're going to write
+in a second so just to keep those
+short and concise i'm going to
+initialize len one to be the length of
+list one
+like that and i'm going to do the same
+for for list two now these this aren't
+going to change
+in length so we don't actually need to
+update these from then onwards
+now we need to consider when we're done
+and we're done
+when neither list has any elements left
+so while
+index one is less than
+then one or
+index two is less than n2 then there
+must be some elements left in at least
+one of these two lists
+if index one equals len one and index
+two equals length two
+then we're done and we're going to fall
+through the bottom we need an or
+statement here so that we
+make sure that we keep going so long as
+there's some elements left in at least
+one of our two lists
+okay so let's first of all consider that
+the happy case where both lists have
+elements in because that's
+that's the common case so what's the
+condition here
+well if list one
+index one in other words the first
+remaining element of list one
+is less than list two index
+two the first remaining element of list
+two
+then we want to append to our merged
+list so
+merged list dot append
+and what are we going to merge to it or
+we want the lowest one so we're going to
+take
+this one in that case and append that
+onto the end of the list
+okay otherwise we're going to take it
+from the other list
+so we'll take this to index two
+okay now when we're taking an element
+from our list we're going to have to
+increase the index so that we move past
+that element
+so in here we're going to index one
+we're going to
+plus equals one so add one to the value
+of
+index 1. and similarly we'll add 1 to
+the value of index 2
+in the second case there
+so thinking back to our five cases we've
+dealt with three of them so far
+we've dealt with the case where there
+are no elements left and we've dealt
+with
+both of the cases where both lists have
+elements
+now we've got to deal with the two
+corner cases what happens when
+one of the lists has elements either
+list one has no elements or list2 has no
+elements
+so we could add special cases for that
+but i'm going to just add them into the
+conditions here
+so this first conditional here
+we mustn't ever run this test if either
+of the list is empty
+because if we run this test when either
+of the list is empty we're going to be
+trying to compare something that's off
+the end of the list and that's going to
+cause python to cause our code to crash
+so that would be a bad thing so
+let's just deal first of all with the
+case where
+list2 has no more items left if list2
+has no more items left
+then we want to run this code in here
+so that's easy we can test for when
+list2 has no more items left
+if index 2 is equal to len 2
+then there are no more elements left in
+list 2.
+and we can use an or statement there
+okay so when we run it come into here
+we'll check first of all whether there's
+no more elements left in
+index two if this is true then
+the or statement will automatically be
+true we don't need to run that test
+because of the way python does lazy
+evaluation of
+expressions and so we will just take the
+reigning elements from from this one
+until that runs out
+but we've still got one more thing to do
+we need to make sure that we don't
+try and run this comparison when list
+one is empty
+so we need to add some additional code
+here
+so let's just move this onto another
+line to get a little bit more space
+and i'm going to put brackets around
+there because
+this only applies in this particular
+case
+we want to test whether list one is
+not empty so if index
+one is less than len one then
+this one is not empty and in that case
+we can actually run the condition this
+is going to be an
+and statement there now
+have we covered all the cases well let's
+just think this through carefully
+if both this have become empty then
+neither of these parts will be true and
+we'll drop through and return the result
+so that's the first of our five cases
+if list two is empty
+then this will be true so the or
+statement will be automatically true
+and then we're gonna take the element
+out of list one
+if there are elements in at least list
+two
+then we need to check whether there's
+anything left in this one so
+we go into here now this says if
+index one is less than one so in other
+words are there any elements left
+in list one if this is false
+then the and statement will
+automatically be false
+and the if statement then ends up being
+false and we drop through to here
+so only if there are elements that are
+in list two
+so that forces as by the or statement to
+come into here
+and there are elements left in this one
+where we finally actually compare
+the first element out of both lists and
+if that's true then we'll go
+either here or here depending on
+what the values actually are and so now
+we've covered
+all five cases and this should work
+now this particular set of conditions
+is not really all that simple it's this
+is the case where you really do need to
+stop and think before you start to write
+the code as to
+what are all the cases i need to handle
+and how should i handle them
+and if you don't do that stop and think
+before you write code
+then you probably have more difficulty
+actually making the code work
+so now we have a merge function we can
+use that to go and build our merge sort
+now it's probably worth us giving a
+little bit of thought to how we're going
+to go about doing this
+so merge sort is given a list that it's
+requested to sort
+so what's it going to do with it well
+this
+lends itself really nicely to a
+recursive algorithm
+we can simply split the list into two
+halves
+and we can call merge sort on one half
+and we call
+merge sort on the other half
+and once those merge sorts are finished
+we end up
+with two sorted lists and then
+we can combine those together with the
+merge function that we've just written
+okay and so what this will do
+is you will start off with a long list
+you'll call merge sort and then each
+merge sort will get a shorter list and a
+short list than shorter list
+until we get all the way down to a list
+of length one
+and then it will no longer bother to
+call merge sort
+it will just merge the two lists back
+together and so that gives us a nice
+recursive algorithm
+so let's see what that looks like in
+python we're almost at the place where
+we can actually
+finally write our merge sort but before
+we do there's one more thing i want to
+show you
+so let's just fire up python
+now i'm just going to create a list and
+we'll add some elements to it
+okay there's five six elements starting
+at zero
+now you've already seen that we can
+access elements of the list
+such as the element in position one
+by doing that but you can also take
+slices out of lists
+so i can for example do element one
+up two but not including element number
+three in this way
+and that will just give us one and two
+out of the middle of the list
+i can also emit some of those parameters
+so i can do element
+one up until the end of the list like
+that
+and that will give me the list without
+the first part of it
+and i can do the inverse i can do
+up to but not including element three
+and do that
+and so this list slicing gives us a
+slice out of the original list it
+doesn't make a copy of the list so it's
+quite efficient in the way it does it
+um but this list slicing allows us to
+take out chunks of a list and actually
+work with them as if they were a
+separate
+list but they're actually still the
+elements in the original list
+and with that i think we're ready to
+actually finally write our merge sort
+okay so what are we going to do well
+the first thing we need to do is to
+think about the case
+when the list has shrunk all the way
+down to the point where it's either 0 or
+1 elements
+and so if the
+length of the list
+is less than or equal to one
+then we're just going to return the list
+as it is
+because it doesn't need any more sorting
+at that point
+otherwise what we're going to do is
+we're going to split the list into two
+so we need to pick a pivot
+around which to split the list
+so pivot is going to be the index of the
+middle of the list
+so that's going to be the length of the
+list
+length of the list divided by two
+and now what we're going to do is
+recursively call the merge sort
+on on the pieces so
+this one is going to be equal to
+merge sort because we'll call ourself
+but with only half of the data
+typing is not working today and we're
+going to call from the beginning of the
+list up to but not including the pivot
+now
+that's what i meant to type we'll take
+the elements of the list
+from the start all the way up to but not
+including the pivot
+and we'll call merge sort to sort those
+and then we're going to call merge sort
+again on the second half of the list
+so each time it's going to be getting
+smaller and smaller so this one will
+take
+from and including the pivot up to the
+end
+and now we've got two lists that are now
+at this point sorted
+so we just need to put those two lists
+together
+and we need to do that by calling merge
+list one and list two
+and that will give us a nice merged
+sorted list in order to return
+um and we better actually return it
+yeah and that's all there is to our
+recursive definition of merge sort now
+we've got
+the lists already sorted from the next
+layer down and each time we'll call down
+with the list going shorter and shorter
+and shorter until it gets to length one
+and then it will come back up merging
+the list back together until we finally
+end up with the
+the full list sorted
+so that's that's it hopefully it will
+work
+it's time to test
+and it didn't work um so what's it
+telling us
+well it's telling me that i can't type
+that's what it's telling us
+it says here that i've used a single
+equal sign when i shouldn't have done
+so let's go back and fix our tests which
+i got wrong right back at the start
+hopefully you notice that but
+it's still pretty easy to
+to make this mistake even when you've
+been programming for
+a long time but it's also pretty easy to
+recognize you've made the mistake
+okay so that's fixed hopefully that will
+actually now work
+and we ended up with a
+another error um where one is that one
+from
+so what's going wrong now well what
+we're seeing is
+an assertion failure that says that when
+we tried to sort the list one two three
+four
+instead of getting one two three four we
+got one one one one
+so i've made another mistake so what
+have i got wrong this time
+well it's probably not the test that's
+wrong we've probably got the code wrong
+somewhere
+and if i look at this piece of code
+let's just look through
+if the length of the list is less than
+or equal to one then return the list
+that looks correct
+pivot is equal to the length of the list
+divided by two that looks correct
+we've correctly sliced out the first
+half of the list we've correctly sliced
+out the second half of the list
+and then we're merging oh there's my
+error i typed the wrong
+number there i was merging list one with
+list one and of course it ends up with
+all ones in the list
+okay hopefully it will now work
+and indeed now it passes so
+we've got some confidence that our list
+merging
+via merge sort is actually working now
+yeah i made some mistakes there it's
+pretty much inevitable that you make
+mistakes when you're coding you you will
+even if you get the algorithm right
+you'll still type things wrongly you'll
+make errors
+and this is where having the tests be
+produced in advance
+lets you trap those errors before they
+can go on to course problems later
+my test suite was not very sophisticated
+but it was good enough
+to spot the stupid error i made just
+then typing the wrong list number
+and as a result we pretty rapidly found
+that we had a problem
+and it didn't take me very long to find
+where the error was
+okay so that is merge sort
+we've now seen how the algorithm works
+in principle and we've seen how it
+actually works in python code
+well what next
+[Music]
+we've seen quite a lot about python
+lists now but
+lists aren't the only type that python
+supports for dealing with sequences of
+things
+python also supports truples strings and
+bytes
+so maybe we should have a look at some
+of those
+let's fire up python again
+okay so a tuple is very like a list in
+many ways
+um we can initialize one such as
+like this and unlike a list which we use
+square brackets for the tuple we
+initialize it with round brackets
+and in many ways the tuple behaves just
+like a list
+so for example we could index into a
+tuple in in this way
+and get out element number one and we
+can slice from a tuple in the same way
+as we can slice from a list and get out
+a tuple that now contains
+just elements one and two the main way
+that tuples
+differ from lists is that once you
+create a tuple it's immutable
+which means you cannot change it you
+can't change the elements of it you
+can't append to it you can't delete from
+it it is fixed
+now we'll come back to the question of
+immutability later on in the course
+but generally speaking making something
+immutable
+means that you no longer have to worry
+about other bugs in your code messing
+with that particular piece of data once
+it's created
+it's fixed and that it relieves you some
+of the complexity
+of thinking about different
+possibilities for your code
+if i actually try to modify this tuple
+so like i might append to it
+it will give me an error no attribute
+append and similarly if i try to
+actually modify an element of tuple
+it doesn't allow me to do it so if you
+try modified tuples python will tell you
+in no uncertain terms that you got it
+wrong the
+second type that python supports is
+python strings we've seen strings a few
+times but we haven't really talked very
+much about them so i might for example
+assign some name we can use either
+double
+quotes like that or single quotes like
+that to initialize a string it makes no
+difference which one we use
+personally i tend to use double quotes
+most of the time and then we can
+add some text into the string and one of
+the interesting things about python
+is it supports internationalization so
+what do i mean by that well it means
+that i can for example
+type something like that with
+that e acute as the first character and
+the native character set the computers
+tend to operate in is a character set
+called
+ascii ascii and ascii
+only represents letters and a number of
+characters that
+basically appear in the american
+language
+but people use computers all over the
+world and so
+python strings letters represent
+textual data in what's known as unicode
+which
+allows us to access stuff in in any
+character set from pretty much any
+language in the world
+now if i want to then print out name i
+can print that out
+and it will print out and python will
+just handle the fact that these strings
+are in unicode and therefore they can
+have pretty much any character set
+including for example emojis
+the next thing we might think about is
+how is that represented
+well initially you don't need to worry
+about how python stores this internally
+but sometimes we actually need to turn a
+python string
+into a sequence of bytes for example to
+write into a network packet to transfer
+over the network
+and so python provides a way of doing
+that we can actually for example
+i can tell if i want to encode this name
+and i need to tell it that i actually
+want to encode it specifically in
+unicode utf-8 encoding or whatever
+encoder i want to encode it in but in
+this case
+i'm going to use utf-8 which is kind of
+the standard encoding
+for encoding unicode when we use across
+the internet when we use it in files and
+things like that is by far the most
+common way
+of expressing unicode in a digital
+format
+so i can do that now if i print out
+bytes
+what i find is that that string recall
+is now representing the computer the
+sequence of bytes the b
+at the start here means that this is a
+byte string
+backslash x means that the next two
+characters are hexadecimal characters in
+this case
+c3 and the next two characters are
+hexamore characters
+eight nine and so what we see here is
+that
+e acute character from up here is now
+being stored in the computer as
+two bytes of information in terms of its
+encoding um
+in in utf-8 the the other characters
+cole didn't need to be expressed in
+anything more complicated because utf-8
+for plain ascii characters just
+represents them as they are
+we'll come back to unicode somewhat
+later in the term and talk a lot more
+about encodings and things like that
+now it's important that when you
+actually write your code that your code
+hopefully can be usable by by people all
+over the world
+and so it's a good idea to write your
+code explicitly thinking about the fact
+that you're not just using
+ascii characters you're writing code
+that can use other character sets
+it's a really good idea to not assume
+english is the only possible language
+either
+so for example if you're writing code to
+be used by lots of users
+you should probably plan for
+international internationalization from
+the start
+rather than hard coding english language
+strings into the software
+you might for example load those strings
+in from a file
+and then different people using software
+in different countries can replace that
+file with a different file of labels for
+all the buttons on your application
+it's also important to note that things
+like dates
+currency even number representations
+change
+by where you are in the world in england
+if i represent 10
+000 i would normally represent it as 10
+comma 0 0 0
+but if you do the same thing in for
+example germany
+that would be 10.000 and
+neither case is python doing the right
+thing with
+as ten thousand just stick to ten
+thousand like that if you're trying to
+teach python how to do
+numbers so what operations can we
+perform on strings
+well let's type in a long string and
+have a look
+now what can we do to that string well
+the first thing we can do to it is to
+index individual characters out of the
+string in the same way we can index into
+lists so
+if we want the character number 10
+out of that string we do that and that
+will give us just the o
+from on the second thing we can do
+is we can slice out pieces of strings
+in the same way we can slice out pieces
+of python lists
+so for example if i slice character four
+up to nine that will give us quiet
+and it's also possible to slice out from
+the end of a string
+so we can for example go six characters
+back from the end of the string like
+this with a negative index
+all the way through to the end of the
+string and that will slice out front
+and we can do that we can combine
+strings
+so we can take this
+and we can take
+the piece from the end like this
+and the plus here is not arithmetic plus
+but it's just
+concatenation of one string with another
+and so that will give us
+quiet front another thing we can do is
+we can go through and we can split up a
+string
+into elements of a list so for example
+if we want to have all the words
+separately from the string we can do
+that we can do
+s dot split
+that will split up our string and we
+need to tell it what character i want to
+split on i want to sit on spaces
+and i can do that and then i'll get all
+quiet on the western front
+as individual words in a list and so if
+i want to know what the
+say fourth word in that list is i can do
+s dot split i can index into my list
+and i can print out western so this
+gives us quite a lot of power to be able
+to take
+strings as input and and muck with them
+basically chop them up slice
+them split them index words out of data
+and so forth that make quite python a
+pretty expressive language for dealing
+with strings
+one last thing we can do is we can
+compare strings
+so we can compare
+hello with world
+we could if i could type and that comes
+out as true
+and we can compare equality those aren't
+equal
+and we can compare the other way around
+hello is not greater than world
+and so what's it doing here when we
+compare for
+inequality well what it's doing is it's
+comparing the strings lexographically
+so it would say which one would appear
+before the other one in the dictionary
+but you've got to be a little bit
+careful here because you've got to be
+careful with capitalization
+so hello for example is
+not the same as oops
+need to type better
+there's hello like that that's false
+and now which way around are they
+inequality
+well it turns out that
+uppercase comes before lowercase in the
+ascii tables and so equally
+when we're comparing uppercase versus
+lowercase uppercase hello comes before
+lowercase hello when we're doing a
+comparison
+[Music]
+python is also pretty expressive in the
+way it allows you to build up
+strings out of other variables and
+things like that
+so let's have a look at that rather than
+type this in in front of you
+here's one that i've prepared earlier
+so for example if you want to make a
+string that goes across multiple lines
+you can use the backslash character to
+escape special characters in this case
+backslash
+n is a new line you could also do
+backslash t
+for tab and other things like that and
+so
+when we run this it's going to print out
+line one on one line and
+line two on the next line
+if you've got data stored in variables
+you can exert that into strings
+so for example we can have this template
+string here
+my name is and then within these
+squiggly brackets
+the name of a variable and if we
+take that string and call format on it
+we can then specify the value that we
+want to actually put into
+the particular name in this case we're
+saying name is equal to mark
+and what will happen is that when format
+runs
+it will search through this string
+looking for this variable name
+it will find it here and it will
+substitute the text mark in in place of
+it
+we can also substitute in numbers and we
+can substitute them in many different
+formats
+so for example if we have the number 14
+and we want to substitute that into a
+string
+we can substitute it in here
+colon d means we want it in decimal but
+we can also substitute it in hexadecimal
+colon
+x we'll give it a hexadecimal or we can
+do it in octal
+if we have say a real number
+that we want to substitute into a string
+we can also express
+how we want that real number to be
+displayed so for example
+if we've got the real number 0.12345
+then we might want to say maybe we want
+to express that number in
+in floating point scientific notation
+or maybe we want to limit it to only two
+decimal places
+and and things like that so this gives
+us the ability
+to tell python how to actually display
+our real number and we can define this
+here as a template that we're going to
+fiddle things in later so we can define
+that string
+in advance and then we can call format
+on that template only then substituting
+in the number that we want
+0.12345 that gives us a string which we
+can then print out
+so let's see how all of those actually
+work
+and we can run python here from within
+emacs
+and now we can see the output so we can
+see our two line string
+up here ended up split across two lines
+we can see that mark was indeed
+substituted
+into that string for name and we can see
+that the number 14
+is 14 in decimal it's en hexadecimal and
+is 16 in octal
+and similarly we can see that if we have
+0.12345 in scientific notation it's
+expressed it here
+in fixed notation with two digits it's
+here and
+if we use that notation it can also give
+us a percentage
+so that gives us a lot of power in terms
+of how we can actually build up strings
+out of data that we have in other
+variables
+so now we know a bit about strings maybe
+we should go back to our merge sort and
+figure out
+how we need to modify merge sort in
+order to sort our strings
+okay so here's our merge sort well as
+always we'll write a test
+we'll test sort strings
+and what we should do is we should add
+some tests for strings so we can test
+whether
+a string abc
+sort to string abc
+and what else should we do well let's do
+a few more
+so let's say ba
+okay now what's that going to sort to
+well we'd like it we expect it to sort
+shorter strings first
+so a will come before aa
+and we would expect ba to come before
+bbb
+okay so it's a little bit long it's a
+bit ugly when it split over two lines so
+we can
+backslash that and split it over two
+lines like that okay so here's our test
+so how are we going to have to modify
+the merge sort in order for that to work
+well why don't we have a look and see
+what happens if we run it
+run pi test merge
+and it just ran and it passed the tests
+that's interesting because we defined
+merge sort without knowing anything
+about strings
+and actually it turns out that our
+existing merge sort with no
+modifications whatsoever
+is able to sort strings so why is that
+the case
+we didn't particularly write this swift
+strings in mind but
+if you look at these lists in merge sort
+itself
+there's nothing in here whatsoever that
+says anything about what type
+the lists are and so our merge sort
+function
+is totally agnostic to whether it's a
+list of numbers or a list of strings or
+a list of anything else
+now what about our merge function here
+does anything in there care about what
+type the data is
+well none of this up here does the
+length of a list is the length of the
+list no matter how many items or what
+type they are
+so what else the only thing in here that
+actually cares
+at all about what type things are when
+we actually look at the data
+and this is the only place we actually
+look into the data to do anything with
+and the only thing we do is call that
+less than operator on there
+and if you recall we already know that
+we can use less than and greater than
+things like that to compare strings so
+this means that
+our merge sort implementation in python
+is a generic implementation
+it will work for any types of data for
+which you can call
+less than on it and that's a pretty
+powerful thing
+that's known as generic programming if
+you wanted to do the same thing
+in a language like c you'd have more
+difficulty doing it it is possible to do
+but not as elegantly as it is in python
+because python figures out the types at
+runtime whereas in c
+you'd have to tell it the types in
+advance and that means that when we want
+to make it work on both strings and
+numbers
+we'd actually have to do something
+different when we did that
+now as it is we also know that our
+string comparison compares for example
+uppercase strings separately from
+lowercase strings
+and we might just want to have our merge
+sort work in alphabetical order
+irrespective of their uppercase or
+lowercase
+is it possible for us to do that
+well yes we could do that too we would
+have to actually
+pass in a compare function and so
+we can pass in a compare function here
+and rather than doing less than
+we can call the compare function now
+how can we pass in functions well
+functions are our first class
+objects in python they're first class
+objects which means that we can actually
+pass them around we can create a
+function and we can pass it around
+now we're obviously going to need to
+pass in this
+and in order to actually make this work
+we're going to actually need to
+pass in that function when we call the
+strings so
+i'm just going to comment out
+all of these for a second
+i don't particularly want to actually
+run that test now
+and i'm going to write a compare string
+function
+and our compare string function is going
+to take two strings string one and
+string two
+and initially we'll just do s1 is less
+than s2
+and we can return that
+and now i can use this compare string
+function within my merge sort i can take
+the name of that function and pass it
+into
+all of my calls to
+merge sort and i got that one in the
+wrong place
+it has to be a parameter to merge sort
+and now we should have the same results
+because all we're doing is passing in a
+function that does the same thing we did
+before
+but let's just check that we got that
+right first
+and it says we've got one argument
+missing and indeed we have
+so this is where having tests is useful
+i forgot to pass
+compare into merge there
+we'll try that and now our test passes
+okay so what happens now if we want to
+make
+it so that it's agnostic to the case
+so for example we can modify this test
+to use
+uppercase characters here so we might
+make this
+ba instead of
+lowercase ba now in doing this
+this test is going to fail because
+although these are correctly
+in alphabetical order capital letters
+come before lowercase letters and so
+what this will happen when we run this
+test is it's going to fail
+and indeed it does because what happens
+is it's sorted
+capital b a to the front a head of a
+and that may not be what we want
+so now we can modify our test to not
+care about whether they're uppercase or
+lowercase and we'll do that
+by simply converting the strings to be
+lowercase before we compare them
+like that like that
+and now it's going to do a comparison of
+the strings all in lowercase
+and now it will actually sort them into
+the correct alphabetical order
+but let's just check that works
+and indeed that now passes the test
+so this allows us to do any arbitrary
+comparison we want this is generic
+programming
+in the sense of we can our merge sort
+algorithm doesn't care what the types of
+the data are
+and we pass in the right function to do
+the comparison so we could for example
+compare them based on the length of the
+string instead of
+on the value
+in the strings and things like that
+so for example if we want to compare
+strings
+based on their length rather than on the
+contents of them
+we could write a different comparison
+function
+which would just take the length of
+string 1
+and the length of string 2 and compare
+those only without caring much about the
+contents
+and we can then add a test
+to verify that this is also doing the
+right thing
+in this case we should probably modify
+this test so that
+it does something different from the
+other tests
+and so what we'll do is we'll make that
+longer
+and there we will hopefully have sorted
+the strings to the right length
+so what are we doing here we've before
+we were comparing the contents of the
+string
+using this function and now we've added
+an additional
+test here which is using a different
+comparison function
+which only compares the lengths of the
+strings and when we do that
+they should come out in this order
+because
+then the strings are increasing lengths
+just verify that works
+and indeed it does so this is now quite
+a powerful technique we've written this
+single merge sort function
+this merge sort function doesn't care
+about what types the data is
+it doesn't care what comparison between
+the data is it just requires that you
+feed it two lists of something
+and a comparison function that can
+compare the different items
+in whatever you fed it using whatever
+criteria you want and it will sort it
+it doesn't care about any of that that's
+the power of generic programming we
+didn't need to change our merge short
+function at all
+in order to make it compare on length
+rather than on comparing on content
+now we've covered quite a lot today and
+we're almost done
+but before we go i'd like to show you
+just one more thing
+back when we were using these different
+comparison functions
+here we had to compare to write a
+function
+comp strollen which then did the
+comparison
+of the length of the two strings
+now it's a little bit clumsy and
+inconvenient sometimes to actually
+explicitly declare a function for that
+so what we can do instead
+is use what's known as an anonymous
+function or a lambda function
+lambda spelt like that
+and what this says is we have a function
+we're not going to give it a name
+but it's going to take two parameters x
+and y and what's it going to do well
+it's going to do
+the same thing we did up here we're
+going to compare the lengths
+of the two strings except of course now
+they're called x and y
+and this will then give us exactly the
+same behavior as before
+but without us actually having to go to
+the effort of declaring this function up
+here
+we can now get rid of that because we
+don't need it anymore
+and so let's just check whether that
+does the same thing
+and indeed it did so sometimes it's just
+convenient if we want to actually pass a
+function in
+to just effectively declare our function
+inline here
+basically our function simply says if
+len x is less than len
+y then return true and that's
+an inline declared function using what
+we call lambda notation
+okay so that's everything i wanted to
+cover for today
+um all of the code from today's lecture
+will be on github as usual so you can go
+back and look through it if there's
+things you don't understand
+and again please ask questions on piazza
+if you have any problems with today's
+material
+see you next time
+you
