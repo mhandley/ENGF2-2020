@@ -1,0 +1,880 @@
+"so we'll just go in here so you can see
+you've been but it's very simple
+it's absurd to call it a maze you keep
+on taking the first turning to the right
+we'll just walk around for 10 minutes
+and then go get some lunch
+they met some people soon after they've
+got inside who said they've been in
+there for three quarters or an hour and
+it had about enough of it
+harris told them they could follow him
+if they liked he was just going in
+and then should turn around and come out
+again they said it was very kind of him
+and fell behind and followed
+harris kept on turning to the right but
+it seemed a long way
+and his cousin said he supposed it was a
+very big maze
+or one of the largest in europe said
+harris yes it must be replied the cousin
+because he walked a good two miles
+already harris began to think it rather
+strange himself
+but he held on until last they passed
+the half of a penny bun on the ground
+and
+harris's cousin swore he'd noticed there
+seven minutes ago"
+that's from three men in a boat by
+jerome k jerome
+
+this is hampton court palace favourite
+home of king henry viii
+there's been a maze in the grounds here since
+1695.
+it was this maze that harris got so
+hopelessly lost in
+now the question i want to answer is
+should harris's turn right rule
+always have worked should he have got to
+the center of the maze
+and if it works for this maze should it
+work for all mazes
+
+this is a map of the maze that has
+appeared back in harris's time
+now it's changed a little bit since then
+but not enough to make much difference
+the variant of harris's turn right rule
+that i learned as a kid
+is the right hand rule you put your
+right hand on the right hand hedge and
+you just keep following it until you get
+to the end so should we see if that
+works
+just keep your right hand on that hedge
+
+well it's not exactly the best path to
+get to the destination
+but it does work
+
+does it always work though what happens
+if we make
+one little tiny change to the maze
+raise that one wall there now what
+happens
+now we've managed to miss out that whole
+center area of the maze
+and we've come back out where we started
+so it doesn't always work
+
+so what's going on here well in order to
+be able to see
+what's really happening it's probably
+better if we
+actually look rather than at the walls
+if we look at the pathways
+and their junctions and rather than
+being all twisted up like this
+it might be good if we stretch them out
+a bit so maybe we can
+reproduce this map but map out actually
+what the topology is
+um overall rather than the the twisted
+and turning passages of the maze
+so we'll start down here with with one
+and i'll draw a map over on the left
+here
+and we can actually map out what we've
+got here so over here we have a junction
+so that's number two it's connected to
+number one
+and at number two if we turn right we go
+down here
+and we get to a dead end and i'll call
+that three
+if we turn left we go
+around here and none of these turns
+really matter so
+we can remove them from our map
+all the way around until we get to
+another junction and we'll call that
+four
+now from four if we turn left
+we go up here i'll call that five
+and so on so let's just speed up a bit
+and build this map
+
+okay so there we have our map of the
+maze
+with all the curvy bits straightened out
+and
+it all twisted out into a long
+fairly simple graph and
+now it's quite easy to see why that
+right hand rule works
+the right hand rule just follows the
+outside
+always going right just follows the
+outside of here
+until we get to the finish
+so what went wrong when we
+removed that wall
+okay so the wall is over here next to
+number three
+and so what actually happened was three
+became a junction
+and so how does that affect our map here
+well if you turn left from 3 you now get
+to 15. so 15 is
+not up here anymore
+but rather it's down here
+but if you turn right from 3 you get to
+13.
+and now we can see that if you follow
+the right hand wall
+you run around this cycle here
+that brings you back to the start and so
+the problem now is that the finish is
+inside that cycle and of course you
+can't find it by following the right
+hand rule
+and actually you can't follow it by
+following a left-hand rule either
+because you simply go the other way
+around the cycle
+so the key thing in terms of whether the
+maze is solvable by the left-hand rule
+or the right-hand rule
+is whether the finish is inside a cycle
+or not
+if it was outside the cycle we would be
+able to find it by going around the
+outside
+but if it's inside there's no way to
+find it using that rule
+now if you look at a maze can you tell
+whether there is a cycle or not
+that the finish is inside well it turns
+out it's actually fairly simple
+there's no possible cycle if there's a
+wall
+by some path goes from the finish all
+the way to the outside of the maze
+if the wall does that it must break the
+cycle
+and therefore you can solve the maze by
+using the right-hand rule
+and if there isn't a wall that goes from
+the finish to the right-hand side
+then there may be a cycle well there
+will be a cycle
+and the maze is not solved by the
+right-hand rule
+so how might we go about solving such
+mazes
+now if we really want to learn how to
+solve this sort of maze maybe we should
+create a slightly simpler example to
+work with
+
+okay so what sort of maze would creators
+problems here
+well maybe we can create a maze that has
+more than one cycle but it's still
+pretty simple
+okay so that's the outside wall and then
+that gives us an outer cycle
+and that gives us an inner cycle
+and so that's a pretty simple maze no
+human would have any great difficulty in
+solving that maze
+but it's a little bit more complicated
+from the point of view of things like
+the right hand rule
+so let's make this into a graph and
+then we'll look at why it's difficult so
+we've got
+one
+now i'm going to label the middle of
+these sides because there are two of
+them there's three and four and we want
+to be able to distinguish between those
+okay so so that's our graph
+now if we try to solve this with the
+right hand rule we know it won't work
+because there's a cycle in fact there
+are two cycles
+the first one just if you follow the
+right arrow goes around the outside
+and even if you miraculously manage to
+get to node six if you follow the right
+hand rule from there
+then you go around this cycle so that
+one is more difficult to solve if you're
+going to actually use a rule like that
+so what can we do instead well
+the way to solve this sort of maze is to
+have some way of keeping track of where
+you've been
+so we might have a what we might call a
+right hand rule with backtracking
+so as you go around the maze we take the
+right hand
+rule as we did before but we get to here
+and this is where we discover that we've
+been there before
+in the case of harris there was a
+current bun on the ground but we might
+if we're doing this in a computer
+annotate the nodes as we've been through
+them so that we know where they've been
+or we might lead a cradle of breadcrumbs
+or whatever you want to do in a real
+maze
+okay so we get to here we notice we've
+been there before we're going to come
+back
+and now when we get back to five we
+remember that there was a branch we
+hadn't taken before
+and so we're going to go down to six and
+now we'll follow
+the right hand one again and here we
+notice we've got to six before
+so we're going to backtrack again to the
+last place we haven't tried
+that takes us back to nine and finally
+we get through to the center
+now the key thing about such a
+backtracking rule
+is that whenever we get somewhere we've
+been before we know that there's no
+point in continuing on
+so we backtrack back to the last place
+we've been
+where there was a path we haven't
+previously explored
+and the nice thing about this is that
+it's guaranteed
+to eventually get there no matter what
+the maze
+you might have to backtrack and then
+backtrack from where you backtracked and
+backtrack from there eventually it's not
+necessarily going to be an efficient
+path
+but it will find a path
+now can we prove that this algorithm
+will always get to the destination
+well yes and i'll just do so very
+informally
+for us to not get to the destination one
+of two things must happen
+we must either get into a loop so we
+never get out again
+or we must not explore some path
+now by keeping track of where we've been
+and by
+backtracking wherever we get to a place
+where we've been before we guarantee
+that we can't possibly loop because we
+will never
+go into a node we've been in before and
+by by never going to a node we've been
+in before
+we therefore can't loop the second thing
+is by backtracking
+we will come back to the path that we
+haven't taken
+and eventually if we fail to get any
+further we will backtrack
+and come back to the previous path we
+hadn't taken and so forth so eventually
+you will backtrack to the point where
+you take
+the last unfollowed path and you will
+eventually get to the destination
+and so by keeping track of the nodes so
+that we don't loop
+and by always backtracking when you
+can't make any further progress
+you guarantee that the progress
+continues until we have traversed
+every link in the graph and in that way
+we can guarantee that we'll get to the
+destination
+so in computer science this is not
+really known as may's following there's
+a particular term for this which is a
+depth first search
+and the idea is we're exploring a graph
+and we go
+as deep into the graph as we can get by
+keeping going on whichever true choice
+we make at each turn
+we keep going as far as we can go until
+we can't get any further
+that's depth first and then we backtrack
+and then we search the next path
+as far as we can go when we can't get
+any further and so forth
+this is a very common algorithm and it's
+not just used for mazes
+we use it for all sorts of things
+
+every child knows the game of noughts
+and crosses or
+as it's sometimes referred to
+tic-tac-toe
+now it's not the most exciting game in
+the world
+but i'm going to use notes and crosses
+to illustrate a bunch of
+points when it comes to how you actually
+program a computer
+to play games so the first thing we
+might think about
+is how many possible move sequences are
+there in this game
+now there's nine places you first person
+can play eight for the second and so
+forth so that gives us nine factorial
+possible move sequences
+that's 362 880 possible move sequences
+now of course not all of those are
+actually possible in a real game
+because sometimes you win the game
+before you get all the squares full
+so if we eliminate those ones that gives
+us 255
+168 possible games
+now that's actually still a fair amount
+but we can reduce that number still
+further by adding one simple rule to the
+game
+which is if you can immediately win you
+must do so
+so if you've already got two in a row
+and it's your game your go and the space
+to go
+you must win and if you do that
+then that reduces the number of possible
+games to 52
+592. there's still a few but it's not
+much for a computer
+okay now actually the number of possible
+games is somewhat smaller than that due
+to various symmetries
+if we take those into account but i'm
+going to ignore those for now
+okay so how are we going to play this
+game
+well what we're going to do is to do
+pretty much exactly the same thing when
+we're exploring a maze
+we're going to do a depth first search
+and so we're going to use
+that to illustrate how you use depth
+first search to play a game
+consider this position pretty close to
+the end of the game
+where x and it's their move the question
+is
+is this a winning position for us well
+what we can do is we can actually
+evaluate the different possibilities
+so we can evaluate the possibility that
+they go there
+now if they go there then they win
+which means we lose so
+that's a losing corner now the other
+possibility
+is that they go here
+now they haven't yet won so there's one
+more move to play
+which is there
+and that's a win for us which means that
+this position is a win for us too
+because there was only one possibility
+which means playing there is a win for
+us
+so was that position a winning position
+for us
+if they play there we win if they play
+there we lose
+the problem is it's their move so
+we get to take a touch to take the best
+choice for them and the best choice for
+them is
+us losing which means this position
+overall
+is a lose so we don't want to get to
+that position
+but you can see what we're doing when
+we're evaluating the possibilities we're
+essentially building
+a tree of possible moves evaluating each
+possible
+move in turn until we get to the end of
+the game
+so that's an end and that's an end and
+then we can propagate back
+up what the position was
+and of course if there are any losers
+and it's their move
+then that position is a lose if there
+are any wins
+and it's our move then that board would
+be a win for us
+similarly if there are no wins or losers
+then if there's a draw for us
+and it's our move then it's at least a
+draw
+and so forth and so you can accumulate
+the different possible outcomes and
+bring them back together to figure out
+whether
+a particular position is a win or a lose
+so we can step a bit further back and
+now and consider
+from a slightly earlier position in the
+game how does this one work out
+
+and so after a lot of working out all
+the possibilities
+we discover that government is our move
+we lose if we go here we lose if we go
+here we lose if we go here we lose if we
+go here
+but we can guarantee a win if we go
+there so this
+overall position is a win now
+what we're doing here is dynamically
+building a graph
+the graph is pretty much like the maze
+we looked at but we're building it on
+the fly we don't actually build the
+whole graph and walk through it
+we're building a graph essentially in
+time
+and in walking through that graph we get
+to the leaves of that graph
+where we actually finally figure out
+whether it's a win or win a win
+lose or whatever and then we can return
+that information
+back up to figure out whether that
+particular branch was guaranteed a win
+guaranteed it'll lose or guaranteed a
+draw if both sides play their best
+and if we do that we can go back to the
+very start of the game and start to ask
+questions like if we go here
+what happens and the outcome of all of
+that calculation
+is
+and we find that's the same for every
+starting position
+with no way to win this game which makes
+it a pretty boring game
+on the other hand should you find
+yourself in the situation needing to
+convince a belligerent artificial
+intelligence supercomputer
+not to declare global thermonuclear war
+maybe you can use
+an example that some games cannot be won
+the only winning move is not to play
+how about a nice game of chess
+now i've written a little notes and
+crosses game in python and we can have a
+look at this to see how this might work
+in actual real code
+so first of all let's actually play the
+game
+and it asks me for the coordinates of
+where i want to go so
+let's say one one top left corner and
+o plays there so we'll play the bottom
+right corner
+and let's say i want to play
+particularly badly so
+can beat me if i go one two and it now
+gets three in a row
+and it wins so it can beat me i can't
+beat it
+because it's simply better than me
+doesn't make mistakes
+um okay so what does the code look like
+well i'm not going to go through all of
+the code here because there's a lot more
+of it that's worth going through but
+it's um it's all going to be on github
+so go and have a look there and
+and see what's there but the essence
+of the search algorithm is
+in a function here called choosebestmove
+and so what choosebestmove is going to
+do is it's going to go through
+for a particular position all of the
+possible positions on the board that it
+could play
+it's going to find the ones that aren't
+empty and then it's going to call
+test move on that particular position
+and
+player will alternate between me and the
+computer
+so what does test move do so test move
+is down here
+what test move does first of all it
+takes
+the data structure for the board and
+makes a copy of it
+so that it can play with it without
+breaking the original board
+so that clones the the board
+then it plays the move that's being
+tested on that board
+it checks to see if that was an
+immediate win if it is then we're done
+but otherwise what it does is it calls
+choose best move again
+with the other player this time but now
+the board has moved on
+and so we alternate between calling
+up here choose best move which for every
+possible position on the
+board we'll call test move which will
+implement that move and then call choose
+best move again and so these two
+functions call each other repeatedly
+it's called mutual recursion we've seen
+recursion before where one function
+calls itself
+but in this case one function calls
+another which calls the first one which
+calls the second one and so forth
+backwards and forwards between the two
+and so that's how we actually implement
+the search because
+although test move only cause choose
+best move
+once for that particular position choose
+best move
+cause test move up to nine possible
+times for the different possible move
+positions on the
+on the board so what we're effectively
+doing then
+by these calls from one function to the
+other is building up
+that graph that we're going to search
+through
+now if you're having trouble visualizing
+how those
+calls between those different functions
+actually build
+a search tree then maybe we should just
+illustrate that a bit
+so first of all we start with this
+function choose best move
+now what does choose best move does well
+for all three positions
+it's going to call test move
+to see whether that position is actually
+a good idea
+and so what's test move going to do well
+the first thing it's going to do is to
+clone the board
+and the reason we clone the board is so
+that we can actually
+play that particular move
+because we don't want to play the move
+on
+the original board we want to play it on
+our hypothetical board so as our what-if
+scenario
+and then once we've played the move then
+we're going to call
+choose best move again
+and so choose best move we'll call test
+move and it will call
+test move and it will call test move
+each for a different possible position
+for every possible free position and
+once it's got the answers back to
+whether these were winning moves or not
+it's going to play whichever one of
+those results in the best move
+now of course choose best move is going
+to call
+test move a bunch of times
+and each of these test moves will call
+choose best move
+and each of them will call test move a
+bunch of times for each of the positions
+that's still free
+now around this time some of these ones
+start to come back as being a win
+or a lose but the ones that haven't
+terminated yet
+we'll call yes choose best move again
+each of these we'll call choose best
+move
+and each of those will call test move
+so as you can see what we end up with
+this expansion
+of building this graph of function calls
+after function call
+each of them going deeper and deeper and
+deeper until it
+eventually gets to the point where it
+says yes that's a
+that's a win or no that's a lose
+and then choose best move aggregates
+those responses and figures out whether
+that
+overall position was a was a win and
+that result
+results an answer to the test move which
+could do anxious choose best move when
+it aggregates
+and everything comes back and eventually
+we get to the point where we
+get an answer back from each of these
+immediate moves we're trying to test
+and then we figure out which one is the
+best one and we play that move
+so this is our search tree and we're
+basically doing a depth first search
+through here until we get
+all the way through to either a win or a
+lose position
+and then when we aggregate that answer
+coming back it will depend on whether
+our opponent or us playing as to whether
+which way we choose us to
+win or lose but then we aggregate that
+information back up to get
+to over here now unlike with the maze
+this whole search tree doesn't exist at
+one time
+this function calls this function called
+this function of course this function
+calls this function
+but none of the rest of the tree exists
+at that point and then we come back here
+and then we call that one we come back
+here and then we'll call that one and
+we'll come back here and then we'll come
+back here then we'll call that one come
+back here we'll call that one
+that one that one and so forth and so
+what you're seeing here is this is
+basically going through
+that search like we did with the maze
+through a tree which is dynamically
+constructed from one function calling
+another in order
+to search out the whole possible space
+of moves for the game
+and so that's how we do a depth first
+search to actually
+figure out how what the best position is
+in a game
+
+how about a nice game of chess
+so what about chess can we use the same
+depth first search strategy that we used
+for notes and crosses
+to play chess well the problem
+is that the number of moves expands
+exponentially
+what do i mean by that well i mean that
+for each possible move in chess
+you have about 30 choices as to where
+you might move
+and then a typical game of chess lasts
+about 50 moves
+which means that for us to evaluate the
+the whole
+game of chess from the beginning to the
+end for all the possibilities and figure
+out the best move
+it's going to be something like 30 to
+the power of 50
+different possible moves we need to
+consider
+now 30 to the power 50 is actually quite
+large
+just how large well if we could
+calculate a billion moves a second
+it's going to take us something like 2
+times 10 to the power of 57 years
+to calculate the game of chess works out
+as
+something like 160 billion trillion
+trillion trillion
+times the current best estimate for the
+age of the universe
+so it's probably not computationally
+tractable to calculate a full game of
+chess
+so what can we do instead
+so one thing we probably can do is to
+consider
+only a certain number of moves ahead
+now if there's about 30 possibilities
+for each move
+if we consider six moves ahead then
+that means we only have to consider
+around 700 million
+moves which is quite a lot but it's
+computationally feasible
+now the problem with only considering a
+limited number of moves ahead is
+it's pretty unlikely that we actually
+get to the point where the game is won
+or lost
+so to do that we're going to need to
+have some way to score the intermediate
+positions
+and that turns out to be not that easy
+one way to score intermediate positions
+is to attach a value to each piece on
+the board
+so for example a pawn might score one a
+rook might score five and a queen
+might score nine and you're king because
+if you lose him you lose the whole game
+you might score a million
+and if you do that then you have a way
+at a particular position to score how
+many pieces you have
+and how many pieces your opponent has
+and therefore
+whether that is a better or a worse
+position than an alternative one you're
+considering
+and that works up to a point but it's
+pretty crude
+it doesn't give you a way to tell the
+difference between positions which are
+the same because no piece got taken but
+are
+strategically very different because in
+one you control all the middle area of
+the board and another one you don't
+so that's only going to be a fairly
+crude way of deciding
+between positions and it's okay in terms
+of beating beginner players but it won't
+beat anybody who's actually any good
+so how can we do better than that well
+it turns out that the opening moves are
+fairly standard so you can simply code
+a whole series of possible standard
+opening moves and
+the end game is mostly about mopping up
+so you can you can code rules for that
+but chess isn't generally one in the
+opening moves or the end game
+it's one in the middle game and so we
+still need to figure out how to actually
+improve our search
+in that part of the game one way of
+doing this is to take account of a
+concept called quiescence
+and so what you might do for example is
+instead of searching
+six moves forward we only search five
+moves forward
+now that's used up some fraction of our
+budget but we look at those five moves
+and we figure out which ones actually
+leave the board largely unchanged
+and those ones we don't bother to
+evaluate any further we take the best of
+the moves we found in those
+first five and we evaluate only those
+ones
+further still and we by doing this we
+can
+eliminate a whole load of moves which
+don't really make much difference
+and roughly the same budget as searching
+six moves
+for every possible move we can actually
+push out our horizon of how far we can
+see
+to about 10 moves before we start to run
+out of processing power
+it turns out that that actually makes
+much bigger difference than just about
+anything else
+but you're still not going to meet a
+grand master by playing chess in this
+way
+to do that you really need to have some
+way of taking into account
+the positions in the board and which
+positions are strategically strong
+and simple rules for playing chess are
+not going to do that
+now a key thing to take away from
+thinking about chess in this way is
+even though actually we can apply a
+search algorithm that's not all that
+different notes and crosses
+to playing chess there are a whole bunch
+of
+problems that we would love to solve in
+the real world that are just not
+computationally tractable because of
+this exponential search
+and so for these kind of problems
+the algorithms we fall back on involve
+heuristics which are
+rough measures to try and approximate
+which things are good and which things
+are bad
+but with uncertain data and a lot of the
+time we use these kind of heuristic
+algorithms
+to try and tackle this computational
+complexity explosion that we get
+when we're looking through a large
+search space and we simply don't have
+the processing power to actually
+evaluate all the possibilities
+so that's just about it for this episode
+we
+started by looking at mazes and
+whether the right hand rule actually
+works or not and
+concluded that it does for hampton court
+maze but not for all mazes
+we then generalize that into depth first
+search
+which you can use to solve any maze
+it's also a powerful technique that you
+can use to search through
+dynamically built spaces such as the the
+space of moves for
+notes and crosses and then we looked at
+more complex games
+particularly we look to chess and how
+depth first search by itself
+can't actually solve chess because of
+the computation explosion in the number
+of moves
+but if we use it in a more restricted
+manner and use it with a bounded horizon
+as to how far we look
+we can at least solve chess at sort of
+beginner to intermediate type level
+okay so see you next time

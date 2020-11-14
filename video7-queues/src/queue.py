@@ -54,3 +54,14 @@ def test_queue():
         q.pop()
     except ValueError as err:
         assert("Attempt to pop from empty queue" in str(err))
+
+
+q = Queue()
+q.add(1)
+q.add(1)
+print(q.head)
+print(q.head.value)
+print(q.tail)      
+print(q.tail.value)
+print("==", q.tail == q.head)
+print("is", q.tail is q.head)

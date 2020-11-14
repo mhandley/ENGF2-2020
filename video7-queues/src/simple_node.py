@@ -8,6 +8,12 @@ class Node():
             raise(ValueError("next node is not none"))
         self.next = node
 
+    def __eq__(self, other):
+        return self.value == other.value
+
+    def __str__(self):
+        return "value=" + str(self.value)
+
 def test_node():
     n1 = Node(1)
     assert(n1.value == 1)

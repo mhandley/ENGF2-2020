@@ -132,9 +132,9 @@ class Frog():
 
     ''' move due to user input '''
     def move(self, dir):
-        self.direction = dir
         if self.moving:
             return
+        self.direction = dir
         self.moving = True
         self.start_move_time = time.time()
         if dir == Direction.LEFT:

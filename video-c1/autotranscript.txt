@@ -1,0 +1,309 @@
+okay all flight controllers gonna go for
+landing retro go
+go go control go go go econ
+go capcom or go for landing eagle
+houston you're a gopher landing over
+the year is 1969 and the luna lander
+spacecraft carrying neil armstrong and
+buzz aldrin
+is 10 000 meters above the moon and
+descending rapidly
+its rocket engine burning to slow down
+from orbital velocity
+as it descends the spacecraft's only
+fly-by-wire computer
+issues a 1202 program
+system alarm looking at our delta h
+that's the primitive program
+it's looking good to us over
+1202.
+the computer fails now apollo 11 will
+leave a new crater on the surface of the
+moon
+despite the most intensive training
+program ever neither astronaut has ever
+seen a 1202 alarm before
+should they abort the landing back in
+mission control
+apollo guidance computer engineer jack
+garman consults his handwritten
+notes so long as the alarms don't come
+too often he concludes
+it should be okay give us a reading on
+the 1202 program alarm
+roger we got you we're going that alarm
+shortly after they get another program
+alarm how do you understand go for
+landing three thousand feet
+alarm 1201
+1201 roger 12 level alarms
+apollo 11 continues down despite
+repeated alarms
+and the rest is history that's one small
+step for man
+what precisely was happening with those
+1201 and 1202 program alarms
+to understand that we need to understand
+a little more about the apollo guidance
+computer
+this was a marvel for its time one of
+the first computers built using
+integrated circuits
+very small and light at a time when
+computers usually filled large rooms and
+consumed huge amounts of power
+the computer had 72 kilobytes of core
+rope read-only memory
+into which software was literally woven
+and four kilobytes of magnetic random
+access core memory
+it was the only computer on the lander
+controlling amongst other things
+the engines reaction control system
+navigation system
+radar and the updating of the cockpit
+display
+the software ran a diverse series of
+tasks at a time rotating between them
+giving the impression that they all ran
+simultaneously
+but four kilobytes wasn't enough storage
+to run all the tasks that landed could
+perform
+all of the time so different tasks were
+enabled or disabled depending on the
+phase of the flight
+memory was divided up into core sets of
+24 bytes
+by careful planning of which tasks
+around at each stage of the flight
+there should always be enough core sets
+available
+late in the development margaret
+hamilton the leader of the development
+team
+started to get concerned that a hardware
+power glitch or some other similar
+problem
+might cause the computer to crash and
+reboot if that happened late in the
+descent
+the outcome would be a disaster so a
+decision was made to modify
+all the critical software to make it
+restartable
+this was not a simple change but it
+seemed like good insurance
+not all the software was protected in
+this way secondary functions that
+wouldn't cause a disaster were not
+rewritten
+now unknown to anyone there was a fault
+in the design of the power systems on
+the lander
+they got really unlucky and the system
+started up just wrong
+the rendezvous radar and the computer
+systems ended up out of phase
+this caused glitches in the radar
+readings
+the radar was not even intended to be
+switched on during landing but the last
+minute they decided to leave it on
+in case it was needed for an abort there
+should have been just enough cpu cycles
+for this to be okay
+so this seemed like a good safety
+measure but as the liner descended
+the constant glitches from the radar
+took up just a little more of the
+computer's time
+meaning the tasks weren't computing fast
+enough this meant
+more core sets were needed than normal
+eventually the computer ran out of core
+sets
+triggering the program alarm now
+running out of memory is a pretty
+serious condition there's not a lot of
+computer can do about this
+and so the apollo guidance computer did
+the only thing it could do
+it rebooted yeah a thousand meters above
+the moon apollo 11 fly-by-wire system
+was rebooting
+due to a cause that no one had foreseed
+or discovered despite exhaustive testing
+and simulation
+fortunately the really critical tasks
+were all restartable
+the highest priority of tasks such as
+navigation were restarted first
+before control was lost rebooting
+cleared out all the non-essential tasks
+freeing up the core sets it also blanked
+the cockpit display
+which must have been very unnerving for
+armstrong and aldrin but they were made
+of the right stuff
+never even mentioned the display kept
+going blank
+as for jack garman he had spent weeks
+understanding every possible error code
+the
+computer could display and concluded
+that a landing could survive a 1201 or
+1202 alarm
+so long as they weren't too frequent
+pretty gutsy decision to say go
+when you know the computer is rebooting
+every 30 seconds or so
+this earned him an award for saving the
+flight
+as for the lessons for computer science
+the decision to make the critical tasks
+restartable saved the flight
+even though they never expect to see
+this error designing software to not
+only be bug-free
+but also resilient to unforeseen events
+is definitely a lesson worth learning if
+you're interested in reading more about
+this
+i recommend sunburst and luminary by don
+isles
+don wrote the software for the landing
+phase and this book explains the
+software in its history in great detail
+
+the year is 1996 and europe's ariane 5
+heavy lift booster
+prepares to launch from french guyana on
+its maiden flight
+
+37 seconds after launch the flight
+computer commands an immediate 90 degree
+turn
+and the launcher breaks up scattering
+toxic debris over a wide area
+this disaster has become known as one of
+the most expensive software bugs in
+history
+to understand what went wrong we need to
+know a little more about ariane's
+computer systems
+ariane 5 uses two redundant inertial
+reference systems or sris
+to measure its position and orientation
+given their critical role
+the sri system is designed to be robust
+to failure if one sri
+fails the other will immediately take
+over the output from the active sri
+is fled to the onboard computer which
+uses the data to keep the rocket on
+course by gimbaling the engine nozzles
+part of the sri software calculates a
+horizontal bias or
+bh value which is related to horizontal
+velocity
+the software calculates bh using 64-bit
+floating point arithmetic
+and then stores the result in a 16-bit
+integer
+37 seconds after launch the bh value
+became too large to store in a 16-bit
+integer
+causing an unprotected overflow
+exception in the ada programming
+language
+this operand error caused the sri
+software on sri unit 1 to declare itself
+failed
+and output a diagnostic bit pattern to
+its output
+failure of sra unit 1 caused an
+immediate failover to the redundant sri
+unit 2
+which promptly also failed 72
+milliseconds later
+with the same overflow error and output
+the same diagnostic bit pattern
+the onboard computer read the diagnostic
+bit pattern from sri 2
+and interpret it as being actual flight
+data
+unfortunately its misinterpretation of
+this bit pattern as orientation data
+caused it to think the rocket was 90
+degrees off course so it commanded full
+nozzle deflections on both the main
+engine and both solid rocket boosters
+just as the rocket was passing through
+the region of maximum aerodynamic
+pressure
+rocket reached an angle of attack of 20
+degrees at which point the two solid
+rocket boosters were ripped off by the
+aerodynamic loads
+triggering an automatic self-destruct
+but why was this overflow error not
+foreseen
+well the software routine to calculate
+bh had flown reliably many times before
+on the ariane 4 booster
+the software was carried over to ariane
+5 without modification
+as it was known to work reliably and
+changing software always carries risk
+software calculating bh is part of a
+routine that started about 10 seconds
+before launch
+and continued until 40 seconds after
+launch
+on ariane 4 bh didn't get to a large
+enough value to overflow within the 40
+seconds that the software ran for
+unfortunately ariane 5 accelerated
+faster and 37 seconds after launch the
+overflow occurred
+even more unfortunately the bh value
+would not even needed an rdn5
+which had a different pre-launch
+initialization sequence from ariane 4.
+this software simply wasn't needed at
+all but it was carried over marianne for
+presumably on the basis that no change
+was safer than making a change
+so what lessons can we learn applying
+software outside of the regime in which
+it has been properly tested
+is a common source of bugs in computer
+software systems
+integer overflow errors are also very
+common in most programming languages
+in c they'll usually cause silent errors
+in either at least they trigger an
+exception
+but uncourt exceptions are almost as bad
+as silent errors
+finally there seems to have been a
+design mentality on the part of the
+ariane computer team
+that random hardware errors were the
+main cause of flight errors
+that provided redundant flight control
+systems with enough to handle this
+thus when both sris suffered the same
+software error
+there was no redundant backup left even
+this might not have been a disaster if
+the engineers hadn't taken the approach
+that a software error should cause the
+system to fail
+open a diagnostic code and not attempt
+to restart
+if they'd implemented a degraded
+accuracy backup mode
+this might have allowed the launcher to
+safely reach orbit
