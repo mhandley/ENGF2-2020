@@ -1,0 +1,22 @@
+fr_model.py
+
+line 265
+	changed x value to -100 to fix the home positions (left home wasn't there)
+
+line 301 
+	called reset_position function to reset frogs position upon death
+
+line 333
+	made self.game_running = True in the restart function to make the game resume after game over
+
+line 380
+	fixed typo (on_log was written as on_long)
+
+line 410
+	created a condition where if the time ran out the game would be over (otherwise game just continued)
+
+fr_view.py
+
+line 169
+	...create_rectangle(CANVAS_WIDTH - 20*remaining ... changed to ... create_rectangle(CANVAS_WIDTH - 7.5*remaining ...
+	so that the timer would not start off-screen
